@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>This is Mohanad's test branch...</Text>
+      <Text>Open up App.js to start working on your app! Adding test message, now going to attempt to merge with master. now fetching</Text>
     </View>
   );
 }
