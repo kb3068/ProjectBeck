@@ -1,10 +1,14 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StatusBar } from "expo-status-bar";
+import React from "react";
+import { StyleSheet, Text, View } from "react-native";
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app! Adding test message, now going to attempt to merge with master. now fetching</Text>
+      <View style={styles.header}>
+        <Text style={styles.boldText}>This is Sriganesh Lokesh's Branch</Text>
+      </View>
+      <StatusBar style="auto" />
     </View>
   );
 }
@@ -12,8 +16,16 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  header: {
+    backgroundColor: "green",
+    padding: 20,
+  },
+  boldText: {
+    fontWeight: "bold",
+    color: "white",
   },
 });
