@@ -1,73 +1,103 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { Component } from 'react';
+import { StyleSheet, Text, View, TouchableWithoutFeedback } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import AntDesign from "react-native-vector-icons/AntDesign";
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>This is Sabhya's test branch</Text>
-    </View>
-  );
+class App extends Component {
+
+  constructor() {
+    super();
+    this.state = {
+      currentId: 1
+    };
+    this.textBoxes = {
+      1: ["Hello, welcome!"],
+      2: ["I’m so excited to meet you."],
+      3: ["Please enter your name."]
+    }
+  };
+
+  goToNext = () => {
+    if (this.state.currentId != Object.keys(this.textBoxes).length) {
+      this.setState({ currentId: this.state.currentId + 1 });
+    }
+  };
+
+  goBack = () => {
+    if (this.state.currentId != 1) {
+      this.setState({ currentId: this.state.currentId - 1 });
+    }
+  };
+
+  render() {
+    return (
+      <TouchableWithoutFeedback onPress={this.goToNext}>
+        <View style={styles.container}>
+
+          <LinearGradient
+            colors={['#90FC8E', '#11A49B']}
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              top: 0,
+              height: '100%',
+            }}
+          />
+          <View style={styles.aroundText}>
+            <View style={styles.leftIcon} onPress={this.goBack}>
+              <AntDesign
+                name="left"
+                color="#ccc"
+                size={45}
+                onPress={this.goBack}
+              />
+            </View>
+            <Text style={styles.textBubble}>{this.textBoxes[this.state.currentId]}</Text>
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
+    );
+  };
 }
 
-// Used to place the character in the bottom right corner, no matter the size of the screen
-const { width, height } = Dimensions.get("window");
-const screenWidth = width;
-const screenHeight = height;
-
-const containerStyles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+    flexShrink: 1,
   },
-  standardBackground: {
-    flex: 1,
-    zIndex: 1
-  },
-  character: {
-    zIndex: 3,
-    position: 'absolute',
-    left: screenWidth - 200,
-    top: screenHeight - 400
-  }
-});
-
-const componentStyles = StyleSheet.create({
   textBubble: {
-    zIndex: 2,
+    textAlign: 'center',
+    justifyContent: 'center',
+    fontSize: 40,
+    flexWrap: 'wrap',
+    padding: 20,
+    marginBottom: 175
+  },
+  aroundText: {
+    justifyContent: 'center',
     width: 287,
     height: 525,
     backgroundColor: '#FFFFFF',
+    // shadowOffset: { width: 10, height: 10 },
+    // shadowColor: 'rgba(0, 0, 0, 0.1)',
+    overflow: 'hidden',
     borderWidth: 0,
     borderRadius: 42,
-    position: 'absolute',    
-    shadowOffset: { width: 10, height: 10 },
-    shadowRadius: 0,
-    shadowColor: '#000000',
-    shadowOpacity: .1,
   },
-  textView: {
-    flex: 1,
-    alignSelf: 'stretch',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingBottom: 100
-  },
-  text: {
-    fontSize: 42,
-    flexWrap: 'wrap',
-    textAlign: 'center',
-    paddingLeft: 20,
-    paddingRight: 20,
-  },
-  iconView: {
-    justifyContent: 'space-around',
-    height: 80,
+  navigation: {
+    padding: 25,
+    fontSize: 20,
+    margin: 10,
+    backgroundColor: 'lightblue'
   },
   leftIcon: {
-    marginTop: 32,
-    marginLeft: 17,
+    marginTop: 10,
+    marginLeft: 10,
+    marginBottom: 'auto'
   }
 });
 
