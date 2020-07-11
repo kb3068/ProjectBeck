@@ -1,7 +1,7 @@
 import * as React from "react"
 import Svg, { Path, Defs, Pattern, Use, Image } from "react-native-svg"
 
-ExcitedCharacter = (props) => {
+function ExcitedCharacter(props) {
     return (
         <Svg width={208} height={404} viewBox="0 0 208 404" fill="none" {...props}>
             <Path fill="url(#prefix__pattern0)" d="M0 0h208v404H0z" />
