@@ -3,7 +3,7 @@ import Svg, { Path, Defs, Pattern, Use, Image } from "react-native-svg"
 
 function ExcitedCharacter(props) {
     return (
-        <Svg width="50%" height="50%" viewBox="0 0 208 404" fill="none" {...props}>
+        <Svg width={208} height={404} viewBox="0 0 208 404" fill="none" {...props}>
             <Path fill="url(#prefix__pattern0)" d="M0 0h208v404H0z" />
             <Defs>
                 <Pattern
