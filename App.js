@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, TouchableWithoutFeedback, ImageBackground, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/Fontisto';
-import { RFPercentage} from "react-native-responsive-fontsize";
+
 // Background SVG
 import BackgroundIcon from './components/BackgroundIcon';
 
@@ -96,16 +96,16 @@ const containerStyles = StyleSheet.create({
   character: {
     zIndex: 3,
     position: 'absolute',
-    right:0,
-    bottom:0
+    left: screenWidth - 200,
+    top: screenHeight - 400
   }
 });
 
 const componentStyles = StyleSheet.create({
   textBubble: {
     zIndex: 2,
-    width: '70%',
-    height: '60%',
+    width: 287,
+    height: 525,
     backgroundColor: '#FFFFFF',
     borderWidth: 0,
     borderRadius: 42,
@@ -123,7 +123,7 @@ const componentStyles = StyleSheet.create({
     paddingBottom: 100
   },
   text: {
-    fontSize: RFPercentage(4),
+    fontSize: 42,
     flexWrap: 'wrap',
     textAlign: 'center',
     paddingLeft: 20,
@@ -136,7 +136,6 @@ const componentStyles = StyleSheet.create({
   leftIcon: {
     marginTop: 32,
     marginLeft: 17,
-
   }
 });
 
