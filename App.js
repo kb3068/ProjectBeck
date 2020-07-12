@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, View, TouchableWithoutFeedback, ImageBackground, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/Fontisto';
 
-// Background SVG
-import BackgroundImage from './components/BackgroundImage';
+// Background SVGs
+import BackgroundImageSmall from './components/BackgroundImageSmall';
+import BackgroundImageBig from './components/BackgroundImageBig';
 
 // Character SVGs
 import ExcitedCharacter from './components/ExcitedCharacter';
@@ -54,13 +55,23 @@ class App extends Component {
   };
 
   render() {
+    // ****Still need to adjust for iPad screen sizes****
+    var backgroundImage = [];
+    // if (screenWidth > 750) {
+    //   backgroundImage.push(<BackgroundImageBig key="big" style={{ zIndex: 6, height: '200%', width:'200%', transform: [{ rotate: '90deg' }] }} />);
+    // }
+    // else {
+      backgroundImage.push(<BackgroundImageSmall key="small" style={{ zIndex: 6, height: '100%' }} />);
+    // }
+
     return (
       <TouchableWithoutFeedback onPress={this.goToNext}>
         <View style={containerStyles.container}>
 
           <ImageBackground style={containerStyles.standardBackground}>
-            <BackgroundImage style={{ zIndex: 1 }} />
+            {backgroundImage}
           </ImageBackground>
+          
 
           <View style={componentStyles.textBubble}>
             <View style={componentStyles.iconView} onPress={this.goBack}>
@@ -71,7 +82,7 @@ class App extends Component {
               <Text style={componentStyles.text}>{this.textBoxes[this.state.currentId][0]}</Text>
             </View>
           </View>
-
+          
           <View style={containerStyles.characterView}>
             {this.characterIcons[this.textBoxes[this.state.currentId][1]]}
           </View>
@@ -86,12 +97,13 @@ class App extends Component {
 const containerStyles = StyleSheet.create({
   standardBackground: {
     flex: 1,
+    width: '100%',
     height: '100%',
-    zIndex: 1
+    resizeMode: 'cover',
+    zIndex: 1,
   },
   container: {
     height: '100%',
-    backgroundColor: 'pink',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 2
@@ -120,7 +132,6 @@ const componentStyles = StyleSheet.create({
     shadowRadius: 0,
     shadowColor: '#000000',
     shadowOpacity: .1,
-    overflow: 'hidden'
   },
   textView: {
     height: '80%',
@@ -143,7 +154,7 @@ const componentStyles = StyleSheet.create({
   leftIcon: {
     height: '100%',
     paddingTop: '8%',
-    paddingLeft: '3%',
+    paddingLeft: '8%',
   }
 });
 
