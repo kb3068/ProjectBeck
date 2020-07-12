@@ -3,13 +3,18 @@ import { StyleSheet, Text, View, TouchableWithoutFeedback, ImageBackground, Dime
 import Icon from 'react-native-vector-icons/Fontisto';
 
 // Background SVG
-import BackgroundIcon from './components/BackgroundIcon';
+import BackgroundImage from './components/BackgroundImage';
 
-// Character SVG Icons
+// Character SVGs
 import ExcitedCharacter from './components/ExcitedCharacter';
 import HappyCharacter from './components/HappyCharacter';
 import NeutralCharacter from './components/NeutralCharacter';
 import SadCharacter from './components/SadCharacter';
+
+// Used to make the left icon and CSS attributes such as fontSize relative to the screen size
+const { width } = Dimensions.get("window");
+const screenWidth = width;
+var iconSize = screenWidth / 10;
 
 class App extends Component {
   constructor(props) {
@@ -54,22 +59,22 @@ class App extends Component {
         <View style={containerStyles.container}>
 
           <ImageBackground style={containerStyles.standardBackground}>
-            <BackgroundIcon style={{ zIndex: 1 }} />
+            <BackgroundImage style={{ zIndex: 1 }} />
           </ImageBackground>
 
           <View style={componentStyles.textBubble}>
-      
             <View style={componentStyles.iconView} onPress={this.goBack}>
-              <Icon name="angle-left" size={45} color="#095266" style={componentStyles.leftIcon} onPress={this.goBack} />
+              <Icon name="angle-left" size={iconSize} color="#095266" style={componentStyles.leftIcon} onPress={this.goBack} />
             </View>
 
             <View style={componentStyles.textView}>
               <Text style={componentStyles.text}>{this.textBoxes[this.state.currentId][0]}</Text>
             </View>
-
           </View>
 
-          {this.characterIcons[this.textBoxes[this.state.currentId][1]]}
+          <View style={containerStyles.characterView}>
+            {this.characterIcons[this.textBoxes[this.state.currentId][1]]}
+          </View>
 
         </View>
       </TouchableWithoutFeedback>
@@ -77,65 +82,68 @@ class App extends Component {
   };
 }
 
-// Used to place the character in the bottom right corner, no matter the size of the screen
-const { width, height } = Dimensions.get("window");
-const screenWidth = width;
-const screenHeight = height;
 
 const containerStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   standardBackground: {
     flex: 1,
+    height: '100%',
     zIndex: 1
+  },
+  container: {
+    height: '100%',
+    backgroundColor: 'pink',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 2
+  },
+  characterView: {
+    zIndex: 4,
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
   },
   character: {
     zIndex: 3,
-    position: 'absolute',
-    left: screenWidth - 200,
-    top: screenHeight - 400
-  }
+  },
 });
 
 const componentStyles = StyleSheet.create({
   textBubble: {
     zIndex: 2,
-    width: 287,
-    height: 525,
+    width: '74%',
+    height: '62%',
+    bottom: '25%',
     backgroundColor: '#FFFFFF',
     borderWidth: 0,
-    borderRadius: 42,
-    position: 'absolute',    
-    shadowOffset: { width: 10, height: 10 },
+    borderRadius: screenWidth * .1,
+    shadowOffset: { width: screenWidth * .024, height: screenWidth * .024 },
     shadowRadius: 0,
     shadowColor: '#000000',
     shadowOpacity: .1,
+    overflow: 'hidden'
   },
   textView: {
-    flex: 1,
+    height: '80%',
     alignSelf: 'stretch',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingBottom: 100
+    paddingBottom: '20%'
   },
   text: {
-    fontSize: 42,
+    fontSize: screenWidth * .10,
     flexWrap: 'wrap',
     textAlign: 'center',
-    paddingLeft: 20,
-    paddingRight: 20,
+    paddingLeft: '5%',
+    paddingRight: '5%'
   },
   iconView: {
     justifyContent: 'space-around',
-    height: 80,
+    height: '20%'
   },
   leftIcon: {
-    marginTop: 32,
-    marginLeft: 17,
+    height: '100%',
+    paddingTop: '8%',
+    paddingLeft: '3%',
   }
 });
 
