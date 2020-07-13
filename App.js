@@ -1,27 +1,33 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import { StyleSheet, Text, View, TouchableWithoutFeedback, ImageBackground, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/Fontisto';
 
+// Custom Font - Oxygen Light
+import * as Font from 'expo-font';
+import { AppLoading } from 'expo';
+
 // Background SVGs
-import BackgroundImageSmall from './components/BackgroundImageSmall';
-import BackgroundImageBig from './components/BackgroundImageBig';
+import BackgroundImageSmall from './components/background/BackgroundImageSmall';
+import BackgroundImageBig from './components/background/BackgroundImageBig';
 
 // Character SVGs
-import ExcitedCharacter from './components/ExcitedCharacter';
-import HappyCharacter from './components/HappyCharacter';
-import NeutralCharacter from './components/NeutralCharacter';
-import SadCharacter from './components/SadCharacter';
+import ExcitedCharacter from './components/character/ExcitedCharacter';
+import HappyCharacter from './components/character/HappyCharacter';
+import NeutralCharacter from './components/character/NeutralCharacter';
+import SadCharacter from './components/character/SadCharacter';
 
 // Used to make the left icon and CSS attributes such as fontSize relative to the screen size
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
 const screenWidth = width;
+const screenHeight = height;
 var iconSize = screenWidth / 10;
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentId: 1
+      currentId: 1,
+      assetsLoaded: false,
     };
 
     // The second item in the list controls which character will show up (these strings must match with the keys in this.characterIcons)
@@ -40,6 +46,15 @@ class App extends Component {
     }
   };
 
+  async componentDidMount() {
+    await Font.loadAsync({
+      'oxygen-bold': require('./assets/fonts/Oxygen-Bold.ttf'),
+      'oxygen-regular': require('./assets/fonts/Oxygen-Regular.ttf'),
+      'oxygen-light': require('./assets/fonts/Oxygen-Light.ttf')
+    });
+    this.setState({ assetsLoaded: true });
+  }
+
   // Changes the text and image to that of the following "page" in the intro sequence
   goToNext = () => {
     if (this.state.currentId != Object.keys(this.textBoxes).length) {
@@ -55,44 +70,55 @@ class App extends Component {
   };
 
   render() {
-    // ****Still need to adjust for iPad screen sizes****
+    // Changes background image to a larger size if the screen exceeds a certain width and height
     var backgroundImage = [];
-    // if (screenWidth > 750) {
-    //   backgroundImage.push(<BackgroundImageBig key="big" style={{ zIndex: 6, height: '200%', width:'200%', transform: [{ rotate: '90deg' }] }} />);
-    // }
-    // else {
-      backgroundImage.push(<BackgroundImageSmall key="small" style={{ zIndex: 6, height: '100%' }} />);
-    // }
+    if (screenWidth > 415 || screenHeight > 900) {
+      backgroundImage.push(<BackgroundImageBig key="big" />);
+    }
+    else {
+      backgroundImage.push(<BackgroundImageSmall key="small" />);
+    }
 
-    return (
-      <TouchableWithoutFeedback onPress={this.goToNext}>
-        <View style={containerStyles.container}>
+    // Waits to load the page until the custom font is loaded
+    const { assetsLoaded } = this.state;
+    if (!assetsLoaded) {
+      return (
+        <AppLoading
+          startAsync={this.fetchFonts}
+          onFinish={() => setDataLoaded(true)}
+        />
+      );
+    }
+    else {
+      return (
+        <TouchableWithoutFeedback onPress={this.goToNext}>
+          <View style={containerStyles.container}>
 
-          <ImageBackground style={containerStyles.standardBackground}>
-            {backgroundImage}
-          </ImageBackground>
-          
+            <ImageBackground style={containerStyles.standardBackground}>
+              {backgroundImage}
+            </ImageBackground>
 
-          <View style={componentStyles.textBubble}>
-            <View style={componentStyles.iconView} onPress={this.goBack}>
-              <Icon name="angle-left" size={iconSize} color="#095266" style={componentStyles.leftIcon} onPress={this.goBack} />
+
+            <View style={componentStyles.textBubble}>
+              <View style={componentStyles.iconView} onPress={this.goBack}>
+                <Icon name="angle-left" size={iconSize} color="#095266" style={componentStyles.leftIcon} onPress={this.goBack} />
+              </View>
+
+              <View style={componentStyles.textView}>
+                <Text style={componentStyles.text}>{this.textBoxes[this.state.currentId][0]}</Text>
+              </View>
             </View>
 
-            <View style={componentStyles.textView}>
-              <Text style={componentStyles.text}>{this.textBoxes[this.state.currentId][0]}</Text>
+            <View style={containerStyles.characterView}>
+              {this.characterIcons[this.textBoxes[this.state.currentId][1]]}
             </View>
-          </View>
-          
-          <View style={containerStyles.characterView}>
-            {this.characterIcons[this.textBoxes[this.state.currentId][1]]}
-          </View>
 
-        </View>
-      </TouchableWithoutFeedback>
-    );
-  };
+          </View>
+        </TouchableWithoutFeedback>
+      );
+    };
+  }
 }
-
 
 const containerStyles = StyleSheet.create({
   standardBackground: {
@@ -106,7 +132,7 @@ const containerStyles = StyleSheet.create({
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    zIndex: 2
+    zIndex: 2,
   },
   characterView: {
     zIndex: 4,
@@ -141,11 +167,13 @@ const componentStyles = StyleSheet.create({
     paddingBottom: '20%'
   },
   text: {
+    fontFamily: 'oxygen-light',
     fontSize: screenWidth * .10,
     flexWrap: 'wrap',
     textAlign: 'center',
     paddingLeft: '5%',
-    paddingRight: '5%'
+    paddingRight: '5%',
+
   },
   iconView: {
     justifyContent: 'space-around',
