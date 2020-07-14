@@ -1,21 +1,33 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import { StyleSheet, Text, View, TouchableWithoutFeedback, ImageBackground, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/Fontisto';
 
-// Background SVG
-import BackgroundIcon from './components/BackgroundIcon';
+// Custom Font - Oxygen Light
+import * as Font from 'expo-font';
+import { AppLoading } from 'expo';
 
-// Character SVG Icons
-import ExcitedCharacter from './components/ExcitedCharacter';
-import HappyCharacter from './components/HappyCharacter';
-import NeutralCharacter from './components/NeutralCharacter';
-import SadCharacter from './components/SadCharacter';
+// Background SVGs
+import BackgroundImageSmall from './components/background/BackgroundImageSmall';
+import BackgroundImageBig from './components/background/BackgroundImageBig';
+
+// Character SVGs
+import ExcitedCharacter from './components/character/ExcitedCharacter';
+import HappyCharacter from './components/character/HappyCharacter';
+import NeutralCharacter from './components/character/NeutralCharacter';
+import SadCharacter from './components/character/SadCharacter';
+
+// Used to make the left icon and CSS attributes such as fontSize relative to the screen size
+const { width, height } = Dimensions.get("window");
+const screenWidth = width;
+const screenHeight = height;
+var iconSize = screenWidth / 10;
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentId: 1
+      currentId: 1,
+      assetsLoaded: false,
     };
 
     // The second item in the list controls which character will show up (these strings must match with the keys in this.characterIcons)
@@ -34,6 +46,15 @@ class App extends Component {
     }
   };
 
+  async componentDidMount() {
+    await Font.loadAsync({
+      'oxygen-bold': require('./assets/fonts/Oxygen-Bold.ttf'),
+      'oxygen-regular': require('./assets/fonts/Oxygen-Regular.ttf'),
+      'oxygen-light': require('./assets/fonts/Oxygen-Light.ttf')
+    });
+    this.setState({ assetsLoaded: true });
+  }
+
   // Changes the text and image to that of the following "page" in the intro sequence
   goToNext = () => {
     if (this.state.currentId != Object.keys(this.textBoxes).length) {
@@ -49,93 +70,119 @@ class App extends Component {
   };
 
   render() {
-    return (
-      <TouchableWithoutFeedback onPress={this.goToNext}>
-        <View style={containerStyles.container}>
+    // Changes background image to a larger size if the screen exceeds a certain width and height
+    var backgroundImage = [];
+    if (screenWidth > 415 || screenHeight > 900) {
+      backgroundImage.push(<BackgroundImageBig key="big" />);
+    }
+    else {
+      backgroundImage.push(<BackgroundImageSmall key="small" />);
+    }
 
-          <ImageBackground style={containerStyles.standardBackground}>
-            <BackgroundIcon style={{ zIndex: 1 }} />
-          </ImageBackground>
+    // Waits to load the page until the custom font is loaded
+    const { assetsLoaded } = this.state;
+    if (!assetsLoaded) {
+      return (
+        <AppLoading
+          startAsync={this.fetchFonts}
+          onFinish={() => setDataLoaded(true)}
+        />
+      );
+    }
+    else {
+      return (
+        <TouchableWithoutFeedback onPress={this.goToNext}>
+          <View style={containerStyles.container}>
 
-          <View style={componentStyles.textBubble}>
-      
-            <View style={componentStyles.iconView} onPress={this.goBack}>
-              <Icon name="angle-left" size={45} color="#095266" style={componentStyles.leftIcon} onPress={this.goBack} />
+            <ImageBackground style={containerStyles.standardBackground}>
+              {backgroundImage}
+            </ImageBackground>
+
+
+            <View style={componentStyles.textBubble}>
+              <View style={componentStyles.iconView} onPress={this.goBack}>
+                <Icon name="angle-left" size={iconSize} color="#095266" style={componentStyles.leftIcon} onPress={this.goBack} />
+              </View>
+
+              <View style={componentStyles.textView}>
+                <Text style={componentStyles.text}>{this.textBoxes[this.state.currentId][0]}</Text>
+              </View>
             </View>
 
-            <View style={componentStyles.textView}>
-              <Text style={componentStyles.text}>{this.textBoxes[this.state.currentId][0]}</Text>
+            <View style={containerStyles.characterView}>
+              {this.characterIcons[this.textBoxes[this.state.currentId][1]]}
             </View>
 
           </View>
-
-          {this.characterIcons[this.textBoxes[this.state.currentId][1]]}
-
-        </View>
-      </TouchableWithoutFeedback>
-    );
-  };
+        </TouchableWithoutFeedback>
+      );
+    };
+  }
 }
 
-// Used to place the character in the bottom right corner, no matter the size of the screen
-const { width, height } = Dimensions.get("window");
-const screenWidth = width;
-const screenHeight = height;
-
 const containerStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   standardBackground: {
     flex: 1,
-    zIndex: 1
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+    zIndex: 1,
+  },
+  container: {
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 2,
+  },
+  characterView: {
+    zIndex: 4,
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
   },
   character: {
     zIndex: 3,
-    position: 'absolute',
-    left: screenWidth - 200,
-    top: screenHeight - 400
-  }
+  },
 });
 
 const componentStyles = StyleSheet.create({
   textBubble: {
     zIndex: 2,
-    width: 287,
-    height: 525,
+    width: '74%',
+    height: '62%',
+    bottom: '25%',
     backgroundColor: '#FFFFFF',
     borderWidth: 0,
-    borderRadius: 42,
-    position: 'absolute',    
-    shadowOffset: { width: 10, height: 10 },
+    borderRadius: screenWidth * .1,
+    shadowOffset: { width: screenWidth * .024, height: screenWidth * .024 },
     shadowRadius: 0,
     shadowColor: '#000000',
     shadowOpacity: .1,
   },
   textView: {
-    flex: 1,
+    height: '80%',
     alignSelf: 'stretch',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingBottom: 100
+    paddingBottom: '20%'
   },
   text: {
-    fontSize: 42,
+    fontFamily: 'oxygen-light',
+    fontSize: screenWidth * .10,
     flexWrap: 'wrap',
     textAlign: 'center',
-    paddingLeft: 20,
-    paddingRight: 20,
+    paddingLeft: '5%',
+    paddingRight: '5%',
+
   },
   iconView: {
     justifyContent: 'space-around',
-    height: 80,
+    height: '20%'
   },
   leftIcon: {
-    marginTop: 32,
-    marginLeft: 17,
+    height: '100%',
+    paddingTop: '8%',
+    paddingLeft: '8%',
   }
 });
 

@@ -2,7 +2,7 @@ import * as React from "react";
 import { Dimensions } from 'react-native';
 import Svg, { G, Path, Ellipse, Circle, Defs, LinearGradient, Stop, ClipPath } from "react-native-svg";
 
-function BackgroundIcon(props) {
+function BackgroundImageSmall(props) {
     const { width, height } = Dimensions.get("window");
     const screenWidth = width;
     const screenHeight = height;
@@ -66,4 +66,4 @@ function BackgroundIcon(props) {
     )
 }
 
-export default BackgroundIcon;
+export default BackgroundImageSmall;

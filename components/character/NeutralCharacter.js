@@ -1,9 +1,14 @@
 import * as React from "react"
 import Svg, { Path, Defs, Pattern, Use, Image } from "react-native-svg"
+import { Dimensions } from 'react-native';
+
+const { height } = Dimensions.get("window");
+var characterHeight = height * .44;
+var characterWidth = characterHeight * .515;
 
 function NeutralCharacter(props) {
     return (
-        <Svg width={208} height={403} viewBox="0 0 208 403" fill="none" {...props}>
+        <Svg width={characterWidth} height={characterHeight} viewBox="0 0 208 403" fill="none" {...props}>
             <Path fill="url(#prefix__pattern0)" d="M0 0h208v403H0z" />
             <Defs>
                 <Pattern

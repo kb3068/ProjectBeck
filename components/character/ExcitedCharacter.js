@@ -1,9 +1,15 @@
 import * as React from "react"
+import { Component } from 'react';
 import Svg, { Path, Defs, Pattern, Use, Image } from "react-native-svg"
+import { Dimensions } from 'react-native';
+
+const { height } = Dimensions.get("window");
+var characterHeight = height * .44;
+var characterWidth = characterHeight * .515;
 
 function ExcitedCharacter(props) {
     return (
-        <Svg width={208} height={404} viewBox="0 0 208 404" fill="none" {...props}>
+        <Svg width={characterWidth} height={characterHeight} viewBox="0 0 208 404" fill="none" {...props}>
             <Path fill="url(#prefix__pattern0)" d="M0 0h208v404H0z" />
             <Defs>
                 <Pattern
