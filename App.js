@@ -1,6 +1,7 @@
 import React, { Component, useState } from 'react';
 import { StyleSheet, Text, View, TouchableWithoutFeedback, ImageBackground, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/Fontisto';
+import * as SplashScreen from 'expo-splash-screen';
 
 // Custom Font - Oxygen Light
 import * as Font from 'expo-font';
@@ -47,12 +48,18 @@ class App extends Component {
   };
 
   async componentDidMount() {
+    try {
+      await SplashScreen.preventAutoHideAsync();
+    } catch (e) {
+      console.warn(e);
+    }
     await Font.loadAsync({
       'oxygen-bold': require('./assets/fonts/Oxygen-Bold.ttf'),
       'oxygen-regular': require('./assets/fonts/Oxygen-Regular.ttf'),
       'oxygen-light': require('./assets/fonts/Oxygen-Light.ttf')
     });
     this.setState({ assetsLoaded: true });
+    await SplashScreen.hideAsync();
   }
 
   // Changes the text and image to that of the following "page" in the intro sequence
