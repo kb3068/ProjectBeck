@@ -1,21 +1,30 @@
-import React, { Component, useState } from 'react';
-import { StyleSheet, Text, View, TouchableWithoutFeedback, ImageBackground, Dimensions } from 'react-native';
-import Icon from 'react-native-vector-icons/Fontisto';
-import * as SplashScreen from 'expo-splash-screen';
+import React, { Component, useState } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableWithoutFeedback,
+  ImageBackground,
+  Dimensions,
+} from "react-native";
+import Icon from "react-native-vector-icons/Fontisto";
+import * as SplashScreen from "expo-splash-screen";
 
 // Custom Font - Oxygen Light
-import * as Font from 'expo-font';
-import { AppLoading } from 'expo';
+import * as Font from "expo-font";
+import { AppLoading } from "expo";
 
 // Background SVGs
-import BackgroundImageSmall from './components/background/BackgroundImageSmall';
-import BackgroundImageBig from './components/background/BackgroundImageBig';
+import BackgroundImageSmall from "./components/background/BackgroundImageSmall";
+import BackgroundImageBig from "./components/background/BackgroundImageBig";
 
 // Character SVGs
-import ExcitedCharacter from './components/character/ExcitedCharacter';
-import HappyCharacter from './components/character/HappyCharacter';
-import NeutralCharacter from './components/character/NeutralCharacter';
-import SadCharacter from './components/character/SadCharacter';
+import ExcitedCharacter from "./components/character/ExcitedCharacter";
+import HappyCharacter from "./components/character/HappyCharacter";
+import NeutralCharacter from "./components/character/NeutralCharacter";
+import SadCharacter from "./components/character/SadCharacter";
+
+import TypeWriter from "react-native-typewriter";
 
 // Used to make the left icon and CSS attributes such as fontSize relative to the screen size
 const { width, height } = Dimensions.get("window");
@@ -33,19 +42,26 @@ class App extends Component {
 
     // The second item in the list controls which character will show up (these strings must match with the keys in this.characterIcons)
     this.textBoxes = {
-      1: ["Hello, welcome to Project Beck! I’m so excited to meet you! ", "excited"],
+      1: [
+        "Hello, welcome to Project Beck! I’m so excited to meet you! ",
+        "excited",
+      ],
       2: ["I’m so excited to meet you.", "happy"],
-      3: ["Please enter your name.", "neutral"]
-    }
+      3: ["Please enter your name.", "neutral"],
+    };
 
     // In order to add a character, just add the SVG in the "components" folder
     this.characterIcons = {
-      "excited": <ExcitedCharacter style={containerStyles.character} key="excited" />,
-      "happy": <HappyCharacter style={containerStyles.character} key="happy" />,
-      "neutral": <NeutralCharacter style={containerStyles.character} key="neutral" />,
-      "sad": <SadCharacter style={containerStyles.character} key="sad" />
-    }
-  };
+      excited: (
+        <ExcitedCharacter style={containerStyles.character} key="excited" />
+      ),
+      happy: <HappyCharacter style={containerStyles.character} key="happy" />,
+      neutral: (
+        <NeutralCharacter style={containerStyles.character} key="neutral" />
+      ),
+      sad: <SadCharacter style={containerStyles.character} key="sad" />,
+    };
+  }
 
   async componentDidMount() {
     try {
@@ -54,9 +70,9 @@ class App extends Component {
       console.warn(e);
     }
     await Font.loadAsync({
-      'oxygen-bold': require('./assets/fonts/Oxygen-Bold.ttf'),
-      'oxygen-regular': require('./assets/fonts/Oxygen-Regular.ttf'),
-      'oxygen-light': require('./assets/fonts/Oxygen-Light.ttf')
+      "oxygen-bold": require("./assets/fonts/Oxygen-Bold.ttf"),
+      "oxygen-regular": require("./assets/fonts/Oxygen-Regular.ttf"),
+      "oxygen-light": require("./assets/fonts/Oxygen-Light.ttf"),
     });
     this.setState({ assetsLoaded: true });
     await SplashScreen.hideAsync();
@@ -81,8 +97,7 @@ class App extends Component {
     var backgroundImage = [];
     if (screenWidth > 415 || screenHeight > 900) {
       backgroundImage.push(<BackgroundImageBig key="big" />);
-    }
-    else {
+    } else {
       backgroundImage.push(<BackgroundImageSmall key="small" />);
     }
 
@@ -95,55 +110,59 @@ class App extends Component {
           onFinish={() => setDataLoaded(true)}
         />
       );
-    }
-    else {
+    } else {
       return (
         <TouchableWithoutFeedback onPress={this.goToNext}>
           <View style={containerStyles.container}>
-
             <ImageBackground style={containerStyles.standardBackground}>
               {backgroundImage}
             </ImageBackground>
 
-
             <View style={componentStyles.textBubble}>
               <View style={componentStyles.iconView} onPress={this.goBack}>
-                <Icon name="angle-left" size={iconSize} color="#095266" style={componentStyles.leftIcon} onPress={this.goBack} />
+                <Icon
+                  name="angle-left"
+                  size={iconSize}
+                  color="#095266"
+                  style={componentStyles.leftIcon}
+                  onPress={this.goBack}
+                />
               </View>
 
               <View style={componentStyles.textView}>
-                <Text style={componentStyles.text}>{this.textBoxes[this.state.currentId][0]}</Text>
+                <TypeWriter style={componentStyles.text} typing={1}>
+                  {this.textBoxes[this.state.currentId][0]}
+                </TypeWriter>
               </View>
             </View>
 
             <View style={containerStyles.characterView}>
               {this.characterIcons[this.textBoxes[this.state.currentId][1]]}
             </View>
-
           </View>
         </TouchableWithoutFeedback>
       );
-    };
+    }
   }
 }
 
 const containerStyles = StyleSheet.create({
   standardBackground: {
     flex: 1,
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
     zIndex: 1,
   },
   container: {
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center",
     zIndex: 2,
   },
   characterView: {
     zIndex: 4,
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     right: 0,
   },
@@ -155,43 +174,43 @@ const containerStyles = StyleSheet.create({
 const componentStyles = StyleSheet.create({
   textBubble: {
     zIndex: 2,
-    width: '74%',
-    height: '62%',
-    bottom: '25%',
-    backgroundColor: '#FFFFFF',
+    width: "74%",
+    height: "62%",
+    bottom: "25%",
+    backgroundColor: "#FFFFFF",
     borderWidth: 0,
-    borderRadius: screenWidth * .1,
-    shadowOffset: { width: screenWidth * .024, height: screenWidth * .024 },
+    borderRadius: screenWidth * 0.1,
+    shadowOffset: { width: screenWidth * 0.024, height: screenWidth * 0.024 },
     shadowRadius: 0,
-    shadowColor: '#000000',
-    shadowOpacity: .1,
+    shadowColor: "#000000",
+    shadowOpacity: 0.1,
   },
   textView: {
-    height: '80%',
-    alignSelf: 'stretch',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingBottom: '30%',
-    paddingLeft: '15%',
-    paddingRight: '15%',
+    height: "80%",
+    alignSelf: "stretch",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingBottom: "30%",
+    paddingLeft: "15%",
+    paddingRight: "15%",
   },
   text: {
-    fontFamily: 'oxygen-light',
-    fontSize: screenWidth * .072,
-    flexWrap: 'wrap',
-    lineHeight: screenWidth * .108,
-    textAlign: 'left',
-    color: '#195D70'
+    fontFamily: "oxygen-light",
+    fontSize: screenWidth * 0.072,
+    flexWrap: "wrap",
+    lineHeight: screenWidth * 0.108,
+    textAlign: "left",
+    color: "#195D70",
   },
   iconView: {
-    justifyContent: 'space-around',
-    height: '20%'
+    justifyContent: "space-around",
+    height: "20%",
   },
   leftIcon: {
-    height: '100%',
-    paddingTop: '8%',
-    paddingLeft: '8%',
-  }
+    height: "100%",
+    paddingTop: "8%",
+    paddingLeft: "8%",
+  },
 });
 
 export default App;
