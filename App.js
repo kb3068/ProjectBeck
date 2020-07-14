@@ -33,7 +33,7 @@ class App extends Component {
 
     // The second item in the list controls which character will show up (these strings must match with the keys in this.characterIcons)
     this.textBoxes = {
-      1: ["Hello, welcome!", "excited"],
+      1: ["Hello, welcome to Project Beck! I’m so excited to meet you! ", "excited"],
       2: ["I’m so excited to meet you.", "happy"],
       3: ["Please enter your name.", "neutral"]
     }
@@ -171,16 +171,17 @@ const componentStyles = StyleSheet.create({
     alignSelf: 'stretch',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingBottom: '20%'
+    paddingBottom: '30%',
+    paddingLeft: '15%',
+    paddingRight: '15%',
   },
   text: {
     fontFamily: 'oxygen-light',
-    fontSize: screenWidth * .10,
+    fontSize: screenWidth * .072,
     flexWrap: 'wrap',
-    textAlign: 'center',
-    paddingLeft: '5%',
-    paddingRight: '5%',
-
+    lineHeight: screenWidth * .108,
+    textAlign: 'left',
+    color: '#195D70'
   },
   iconView: {
     justifyContent: 'space-around',
