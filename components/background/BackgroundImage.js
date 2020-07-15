@@ -2,13 +2,13 @@ import * as React from "react";
 import { Dimensions } from 'react-native';
 import Svg, { G, Path, Ellipse, Circle, Defs, LinearGradient, Stop, ClipPath } from "react-native-svg";
 
-function BackgroundImageSmall(props) {
-    const { width, height } = Dimensions.get("window");
-    const screenWidth = width;
-    const screenHeight = height;
-    
+function BackgroundImage(props) {
+    var { width, height } = Dimensions.get("window");
+    var screenWidth = width;
+    var screenHeight = height;
+
     return (
-    <Svg width={screenWidth} height={screenHeight} viewBox="0 0 360 812" fill="none" preserveAspectRatio="none" {...props}>
+        <Svg width={screenWidth} height={screenHeight} viewBox="0 0 360 812" fill="none" preserveAspectRatio="xMaxYMax slice" {...props}>
             <G clipPath="url(#prefix__clip0)">
                 <Path fill="url(#prefix__paint0_linear)" d="M0 0h375v812H0z" />
                 <Ellipse
@@ -66,4 +66,4 @@ function BackgroundImageSmall(props) {
     )
 }
 
-export default BackgroundImageSmall;
+export default BackgroundImage;
