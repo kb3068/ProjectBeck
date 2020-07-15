@@ -18,7 +18,6 @@
     "react-native": "https://github.com/expo/react-native/archive/sdk-38.0.2.tar.gz",
     "react-native-shadow": "^1.2.2",
     "react-native-svg": "12.1.0",
-    "react-native-typewriter": "^0.7.0",
     "react-native-vector-icons": "^7.0.0",
     "react-native-web": "~0.11.7"
   },
