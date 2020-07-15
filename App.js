@@ -3,6 +3,9 @@ import { StyleSheet, Text, View, TouchableWithoutFeedback, ImageBackground, Dime
 import Icon from 'react-native-vector-icons/Fontisto';
 import * as SplashScreen from 'expo-splash-screen';
 
+// Typewriter effect
+import TypeWriter from "react-native-typewriter";
+
 // Custom Font - Oxygen Light
 import * as Font from 'expo-font';
 import { AppLoading } from 'expo';
@@ -21,17 +24,6 @@ const { width, height } = Dimensions.get("window");
 const screenWidth = width;
 const screenHeight = height;
 var iconSize = screenWidth / 10;
-const shadowOpt = {
-  width: 100,
-  height: 100,
-  // color: "black",
-  border: 2,
-  radius: 3,
-  opacity: 0.2,
-  x: 0,
-  y: 3,
-  style: { marginVertical: 5 }
-}
 
 class App extends Component {
   constructor(props) {
@@ -39,11 +31,12 @@ class App extends Component {
     this.state = {
       currentId: 1,
       assetsLoaded: false,
+      typewriterEffect: true,
     };
 
     // The second item in the list controls which character will show up (these strings must match with the keys in this.characterIcons)
     this.textBoxes = {
-      1: ["Hello, welcome to Project Beck! I’m so excited to meet you! ", "excited"],
+      1: ["Hello, welcome to Project Beck!", "excited"],
       2: ["I’m so excited to meet you.", "happy"],
       3: ["Please enter your name.", "neutral"]
     }
@@ -74,8 +67,12 @@ class App extends Component {
 
   // Changes the text and image to that of the following "page" in the intro sequence
   goToNext = () => {
-    if (this.state.currentId != Object.keys(this.textBoxes).length) {
+    if (this.state.typewriterEffect == true) {
+      this.setState({ typewriterEffect: false});
+    }
+    else if (this.state.currentId != Object.keys(this.textBoxes).length) {
       this.setState({ currentId: this.state.currentId + 1 });
+      this.setState({ typewriterEffect: true });
     }
   };
 
@@ -87,6 +84,15 @@ class App extends Component {
   };
 
   render() {
+    // Controls whether the text is shown as a typewriter or not
+    var textType = [];
+    if (this.state.typewriterEffect) {
+      textType.push(<TypeWriter key="typewriter" style={componentStyles.text} typing={1} fixed={false} onTypingEnd={this.goToNext}>{this.textBoxes[this.state.currentId][0]}</TypeWriter>);
+    }
+    else {
+      textType.push(<Text key="text" style={componentStyles.text}>{this.textBoxes[this.state.currentId][0]}</Text>);
+    }
+
     // Waits to load the page until the custom font is loaded
     const { assetsLoaded } = this.state;
     if (!assetsLoaded) {
@@ -112,7 +118,7 @@ class App extends Component {
               </View>
 
               <View style={componentStyles.textView}>
-                <Text style={componentStyles.text}>{this.textBoxes[this.state.currentId][0]}</Text>
+                {textType}
               </View>
             </View>
 
