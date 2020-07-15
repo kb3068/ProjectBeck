@@ -14,10 +14,6 @@ import * as SplashScreen from "expo-splash-screen";
 import * as Font from "expo-font";
 import { AppLoading } from "expo";
 
-// Background SVGs
-import BackgroundImageSmall from "./components/background/BackgroundImageSmall";
-import BackgroundImageBig from "./components/background/BackgroundImageBig";
-
 // Character SVGs
 import ExcitedCharacter from "./components/character/ExcitedCharacter";
 import HappyCharacter from "./components/character/HappyCharacter";
@@ -31,6 +27,17 @@ const { width, height } = Dimensions.get("window");
 const screenWidth = width;
 const screenHeight = height;
 var iconSize = screenWidth / 10;
+const shadowOpt = {
+  width: 100,
+  height: 100,
+  // color: "black",
+  border: 2,
+  radius: 3,
+  opacity: 0.2,
+  x: 0,
+  y: 3,
+  style: { marginVertical: 5 }
+}
 
 class App extends Component {
   constructor(props) {
@@ -93,13 +100,6 @@ class App extends Component {
   };
 
   render() {
-    // Changes background image to a larger size if the screen exceeds a certain width and height
-    var backgroundImage = [];
-    if (screenWidth > 415 || screenHeight > 900) {
-      backgroundImage.push(<BackgroundImageBig key="big" />);
-    } else {
-      backgroundImage.push(<BackgroundImageSmall key="small" />);
-    }
 
     // Waits to load the page until the custom font is loaded
     const { assetsLoaded } = this.state;
@@ -115,7 +115,7 @@ class App extends Component {
         <TouchableWithoutFeedback onPress={this.goToNext}>
           <View style={containerStyles.container}>
             <ImageBackground style={containerStyles.standardBackground}>
-              {backgroundImage}
+              <BackgroundImage />
             </ImageBackground>
 
             <View style={componentStyles.textBubble}>
