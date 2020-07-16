@@ -79,6 +79,7 @@ class App extends Component {
   // Changes the text and image to that of the preceding "page" in the intro sequence
   goBack = () => {
     if (this.state.currentId != 1) {
+      this.setState({ typewriterEffect: false });
       this.setState({ currentId: this.state.currentId - 1 });
     }
   };
@@ -87,7 +88,7 @@ class App extends Component {
     // Controls whether the text is shown as a typewriter or not
     var textType = [];
     if (this.state.typewriterEffect) {
-      textType.push(<TypeWriter key="typewriter" style={componentStyles.text} typing={1} fixed={false} onTypingEnd={this.goToNext}>{this.textBoxes[this.state.currentId][0]}</TypeWriter>);
+      textType.push(<TypeWriter key="typewriter" style={componentStyles.text} typing={1} fixed={false} onTypingEnd={this.goToNext} maxDelay={35}>{this.textBoxes[this.state.currentId][0]}</TypeWriter>);
     }
     else {
       textType.push(<Text key="text" style={componentStyles.text}>{this.textBoxes[this.state.currentId][0]}</Text>);
