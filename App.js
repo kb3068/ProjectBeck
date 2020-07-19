@@ -37,7 +37,7 @@ class App extends Component {
       typewriterEffect: true,
       startWriting: false,
       bubbleTransform: new Animated.Value(0),
-      characterTransform: new Animated.Value(1)
+      characterTransform: new Animated.Value(0)
     };
 
     // The second item in the list controls which character will show up (these strings must match with the keys in this.characterIcons)
@@ -64,7 +64,7 @@ class App extends Component {
     // Makes the soundtrack loop
     soundObject.setIsLoopingAsync(true);
     // Sets the volume of the soundtrack (must be between 0 and 1)
-    soundObject.setVolumeAsync(0.65);
+    soundObject.setVolumeAsync(0.35);
     // Plays sound
     await soundObject.playAsync();
 
@@ -99,7 +99,7 @@ class App extends Component {
   // Starts the character animation and then changes the startWriting state variable so text can start to show up
   startCharacterAnimation = () => {
     Animated.timing(this.state.characterTransform, {
-      toValue: 0,
+      toValue: 1,
       duration: 350,
       easing: Easing.out(Easing.linear),
       useNativeDriver: true,
@@ -132,7 +132,7 @@ class App extends Component {
 
     const yVal = this.state.characterTransform.interpolate({
       inputRange: [0, 1],
-      outputRange: [0, 500]
+      outputRange: [450, 0]
     })
 
     const characterAnimationStyle = {
@@ -185,7 +185,9 @@ class App extends Component {
             </Animated.View>
 
             <Animated.View style={[containerStyles.characterViewAnimation, characterAnimationStyle]}>
+              <View style={containerStyles.characterView}>
                 {this.characterIcons[this.textBoxes[this.state.currentId][1]]}
+              </View>
             </Animated.View>
 
           </View>
@@ -200,7 +202,7 @@ const containerStyles = StyleSheet.create({
     flex: 1,
     width: '100%',
     height: '100%',
-    resizeMode: 'cover',
+    // resizeMode: 'cover',
     zIndex: 1,
   },
   container: {
@@ -208,6 +210,10 @@ const containerStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 2,
+  },
+  characterView: {
+    height: '100%',
+    width: '100%'
   },
   characterViewAnimation: {
     zIndex: 4,
