@@ -1,5 +1,5 @@
 import React, { Component, useState } from 'react';
-import { StyleSheet, Text, View, TouchableWithoutFeedback, ImageBackground, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, TouchableWithoutFeedback, ImageBackground, Dimensions, Animated, Easing } from 'react-native';
 import Icon from 'react-native-vector-icons/Fontisto';
 import * as SplashScreen from 'expo-splash-screen';
 
@@ -32,6 +32,9 @@ class App extends Component {
       currentId: 1,
       assetsLoaded: false,
       typewriterEffect: true,
+      startWriting: false,
+      bubbleTransform: new Animated.Value(0),
+      characterTransform: new Animated.Value(1)
     };
 
     // The second item in the list controls which character will show up (these strings must match with the keys in this.characterIcons)
@@ -61,14 +64,36 @@ class App extends Component {
       'oxygen-regular': require('./assets/fonts/Oxygen-Regular.ttf'),
       'oxygen-light': require('./assets/fonts/Oxygen-Light.ttf')
     });
+
+    this.startTextAnimation();
+
     this.setState({ assetsLoaded: true });
     await SplashScreen.hideAsync();
+  }
+
+  // Starts the text bubble animation and then calls the character animation
+  startTextAnimation = () => {
+    Animated.timing(this.state.bubbleTransform, {
+      toValue: 1,
+      duration: 800,
+      easing: Easing.elastic(1),
+      useNativeDriver: true,
+    }).start(() => { this.startCharacterAnimation() });
+  };
+
+  // Starts the character animation and then changes the startWriting state variable so text can start to show up
+  startCharacterAnimation = () => {
+    Animated.timing(this.state.characterTransform, {
+      toValue: 0,
+      duration: 200,
+      useNativeDriver: true,
+    }).start(() => { this.setState({ startWriting: true }) });
   }
 
   // Changes the text and image to that of the following "page" in the intro sequence
   goToNext = () => {
     if (this.state.typewriterEffect == true) {
-      this.setState({ typewriterEffect: false});
+      this.setState({ typewriterEffect: false });
     }
     else if (this.state.currentId != Object.keys(this.textBoxes).length) {
       this.setState({ currentId: this.state.currentId + 1 });
@@ -85,9 +110,27 @@ class App extends Component {
   };
 
   render() {
+    const textAnimationStyle = {
+      transform: [{ scale: this.state.bubbleTransform }]
+    }
+
+    const yVal = this.state.characterTransform.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, 350]
+    })
+
+    const characterAnimationStyle = {
+      transform: [{
+        translateY: yVal
+      }]
+    }
+
     // Controls whether the text is shown as a typewriter or not
     var textType = [];
-    if (this.state.typewriterEffect) {
+    if (this.state.startWriting == false) {
+      textType.push();
+    }
+    else if (this.state.typewriterEffect) {
       textType.push(<TypeWriter key="typewriter" style={componentStyles.text} typing={1} fixed={false} onTypingEnd={this.goToNext} maxDelay={35}>{this.textBoxes[this.state.currentId][0]}</TypeWriter>);
     }
     else {
@@ -113,19 +156,21 @@ class App extends Component {
               <BackgroundImage />
             </ImageBackground>
 
-            <View style={componentStyles.textBubble}>
-              <View style={componentStyles.iconView} onPress={this.goBack}>
-                <Icon name="angle-left" size={iconSize} color="#095266" style={componentStyles.leftIcon} onPress={this.goBack} />
-              </View>
+            <Animated.View style={[componentStyles.textBubbleAnimation, textAnimationStyle]}>
+              <View style={componentStyles.textBubble}>
+                <View style={componentStyles.iconView} onPress={this.goBack}>
+                  <Icon name="angle-left" size={iconSize} color="#095266" style={componentStyles.leftIcon} onPress={this.goBack} />
+                </View>
 
-              <View style={componentStyles.textView}>
-                {textType}
+                <View style={componentStyles.textView}>
+                  {textType}
+                </View>
               </View>
-            </View>
+            </Animated.View>
 
-            <View style={containerStyles.characterView}>
-              {this.characterIcons[this.textBoxes[this.state.currentId][1]]}
-            </View>
+            <Animated.View style={[containerStyles.characterViewAnimation, characterAnimationStyle]}>
+                {this.characterIcons[this.textBoxes[this.state.currentId][1]]}
+            </Animated.View>
 
           </View>
         </TouchableWithoutFeedback>
@@ -148,7 +193,7 @@ const containerStyles = StyleSheet.create({
     justifyContent: 'center',
     zIndex: 2,
   },
-  characterView: {
+  characterViewAnimation: {
     zIndex: 4,
     position: 'absolute',
     bottom: 0,
@@ -160,11 +205,15 @@ const containerStyles = StyleSheet.create({
 });
 
 const componentStyles = StyleSheet.create({
-  textBubble: {
+  textBubbleAnimation: {
     zIndex: 2,
     width: '74%',
     height: '62%',
     bottom: '25%',
+  },
+  textBubble: {
+    zIndex: 2,
+    height: '100%',
     backgroundColor: '#FFFFFF',
     borderWidth: 0,
     borderRadius: screenWidth * .1,
