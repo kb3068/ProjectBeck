@@ -1,7 +1,10 @@
-import React, { Component, useState } from 'react';
+import React, { Component } from 'react';
 import { StyleSheet, Text, View, TouchableWithoutFeedback, ImageBackground, Dimensions, Animated, Easing } from 'react-native';
 import Icon from 'react-native-vector-icons/Fontisto';
 import * as SplashScreen from 'expo-splash-screen';
+
+// Expo-av module for background audio
+import { Audio } from "expo-av";
 
 // Typewriter effect
 import TypeWriter from "react-native-typewriter";
@@ -41,7 +44,7 @@ class App extends Component {
     this.textBoxes = {
       1: ["Hello, welcome to Project Beck!", "excited"],
       2: ["I’m so excited to meet you.", "happy"],
-      3: ["Please enter your name.", "neutral"]
+      3: ["Please enter your name.", "neutral"],
     }
 
     // In order to add a character, just add the SVG in the "components" folder
@@ -54,6 +57,17 @@ class App extends Component {
   };
 
   async componentDidMount() {
+    // Creates an instance of Audio.sound
+    const soundObject = new Audio.Sound();
+    // Loads sound
+    await soundObject.loadAsync(require("./assets/soundtracks/welcome.mp3"));
+    // Makes the soundtrack loop
+    soundObject.setIsLoopingAsync(true);
+    // Sets the volume of the soundtrack (must be between 0 and 1)
+    soundObject.setVolumeAsync(0.65);
+    // Plays sound
+    await soundObject.playAsync();
+
     try {
       await SplashScreen.preventAutoHideAsync();
     } catch (e) {
@@ -65,6 +79,7 @@ class App extends Component {
       'oxygen-light': require('./assets/fonts/Oxygen-Light.ttf')
     });
 
+    // Start the text bubble animation
     this.startTextAnimation();
 
     this.setState({ assetsLoaded: true });
@@ -85,7 +100,8 @@ class App extends Component {
   startCharacterAnimation = () => {
     Animated.timing(this.state.characterTransform, {
       toValue: 0,
-      duration: 200,
+      duration: 350,
+      easing: Easing.out(Easing.linear),
       useNativeDriver: true,
     }).start(() => { this.setState({ startWriting: true }) });
   }
@@ -116,7 +132,7 @@ class App extends Component {
 
     const yVal = this.state.characterTransform.interpolate({
       inputRange: [0, 1],
-      outputRange: [0, 350]
+      outputRange: [0, 500]
     })
 
     const characterAnimationStyle = {
