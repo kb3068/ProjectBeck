@@ -1,7 +1,13 @@
-import React, { Component, useState } from 'react';
-import { StyleSheet, Text, View, TouchableWithoutFeedback, ImageBackground, Dimensions } from 'react-native';
+import React, { Component } from 'react';
+import { StyleSheet, Text, View, TouchableWithoutFeedback, ImageBackground, Dimensions, Animated, Easing } from 'react-native';
 import Icon from 'react-native-vector-icons/Fontisto';
 import * as SplashScreen from 'expo-splash-screen';
+
+// Expo-av module for background audio
+import { Audio } from "expo-av";
+
+// Typewriter effect
+import TypeWriter from "react-native-typewriter";
 
 // Custom Font - Oxygen Light
 import * as Font from 'expo-font';
@@ -21,17 +27,6 @@ const { width, height } = Dimensions.get("window");
 const screenWidth = width;
 const screenHeight = height;
 var iconSize = screenWidth / 10;
-const shadowOpt = {
-  width: 100,
-  height: 100,
-  // color: "black",
-  border: 2,
-  radius: 3,
-  opacity: 0.2,
-  x: 0,
-  y: 3,
-  style: { marginVertical: 5 }
-}
 
 class App extends Component {
   constructor(props) {
@@ -39,13 +34,17 @@ class App extends Component {
     this.state = {
       currentId: 1,
       assetsLoaded: false,
+      typewriterEffect: true,
+      startWriting: false,
+      bubbleTransform: new Animated.Value(0),
+      characterTransform: new Animated.Value(1)
     };
 
     // The second item in the list controls which character will show up (these strings must match with the keys in this.characterIcons)
     this.textBoxes = {
-      1: ["Hello, welcome to Project Beck! I’m so excited to meet you! ", "excited"],
+      1: ["Hello, welcome to Project Beck!", "excited"],
       2: ["I’m so excited to meet you.", "happy"],
-      3: ["Please enter your name.", "neutral"]
+      3: ["Please enter your name.", "neutral"],
     }
 
     // In order to add a character, just add the SVG in the "components" folder
@@ -58,6 +57,17 @@ class App extends Component {
   };
 
   async componentDidMount() {
+    // Creates an instance of Audio.sound
+    const soundObject = new Audio.Sound();
+    // Loads sound
+    await soundObject.loadAsync(require("./assets/soundtracks/welcome.mp3"));
+    // Makes the soundtrack loop
+    soundObject.setIsLoopingAsync(true);
+    // Sets the volume of the soundtrack (must be between 0 and 1)
+    soundObject.setVolumeAsync(0.65);
+    // Plays sound
+    await soundObject.playAsync();
+
     try {
       await SplashScreen.preventAutoHideAsync();
     } catch (e) {
@@ -68,25 +78,81 @@ class App extends Component {
       'oxygen-regular': require('./assets/fonts/Oxygen-Regular.ttf'),
       'oxygen-light': require('./assets/fonts/Oxygen-Light.ttf')
     });
+
+    // Start the text bubble animation
+    this.startTextAnimation();
+
     this.setState({ assetsLoaded: true });
     await SplashScreen.hideAsync();
   }
 
+  // Starts the text bubble animation and then calls the character animation
+  startTextAnimation = () => {
+    Animated.timing(this.state.bubbleTransform, {
+      toValue: 1,
+      duration: 800,
+      easing: Easing.elastic(1),
+      useNativeDriver: true,
+    }).start(() => { this.startCharacterAnimation() });
+  };
+
+  // Starts the character animation and then changes the startWriting state variable so text can start to show up
+  startCharacterAnimation = () => {
+    Animated.timing(this.state.characterTransform, {
+      toValue: 0,
+      duration: 350,
+      easing: Easing.out(Easing.linear),
+      useNativeDriver: true,
+    }).start(() => { this.setState({ startWriting: true }) });
+  }
+
   // Changes the text and image to that of the following "page" in the intro sequence
   goToNext = () => {
-    if (this.state.currentId != Object.keys(this.textBoxes).length) {
+    if (this.state.typewriterEffect == true) {
+      this.setState({ typewriterEffect: false });
+    }
+    else if (this.state.currentId != Object.keys(this.textBoxes).length) {
       this.setState({ currentId: this.state.currentId + 1 });
+      this.setState({ typewriterEffect: true });
     }
   };
 
   // Changes the text and image to that of the preceding "page" in the intro sequence
   goBack = () => {
     if (this.state.currentId != 1) {
+      this.setState({ typewriterEffect: false });
       this.setState({ currentId: this.state.currentId - 1 });
     }
   };
 
   render() {
+    const textAnimationStyle = {
+      transform: [{ scale: this.state.bubbleTransform }]
+    }
+
+    const yVal = this.state.characterTransform.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, 500]
+    })
+
+    const characterAnimationStyle = {
+      transform: [{
+        translateY: yVal
+      }]
+    }
+
+    // Controls whether the text is shown as a typewriter or not
+    var textType = [];
+    if (this.state.startWriting == false) {
+      textType.push();
+    }
+    else if (this.state.typewriterEffect) {
+      textType.push(<TypeWriter key="typewriter" style={componentStyles.text} typing={1} fixed={false} onTypingEnd={this.goToNext} maxDelay={35}>{this.textBoxes[this.state.currentId][0]}</TypeWriter>);
+    }
+    else {
+      textType.push(<Text key="text" style={componentStyles.text}>{this.textBoxes[this.state.currentId][0]}</Text>);
+    }
+
     // Waits to load the page until the custom font is loaded
     const { assetsLoaded } = this.state;
     if (!assetsLoaded) {
@@ -106,19 +172,21 @@ class App extends Component {
               <BackgroundImage />
             </ImageBackground>
 
-            <View style={componentStyles.textBubble}>
-              <View style={componentStyles.iconView} onPress={this.goBack}>
-                <Icon name="angle-left" size={iconSize} color="#095266" style={componentStyles.leftIcon} onPress={this.goBack} />
-              </View>
+            <Animated.View style={[componentStyles.textBubbleAnimation, textAnimationStyle]}>
+              <View style={componentStyles.textBubble}>
+                <View style={componentStyles.iconView} onPress={this.goBack}>
+                  <Icon name="angle-left" size={iconSize} color="#095266" style={componentStyles.leftIcon} onPress={this.goBack} />
+                </View>
 
-              <View style={componentStyles.textView}>
-                <Text style={componentStyles.text}>{this.textBoxes[this.state.currentId][0]}</Text>
+                <View style={componentStyles.textView}>
+                  {textType}
+                </View>
               </View>
-            </View>
+            </Animated.View>
 
-            <View style={containerStyles.characterView}>
-              {this.characterIcons[this.textBoxes[this.state.currentId][1]]}
-            </View>
+            <Animated.View style={[containerStyles.characterViewAnimation, characterAnimationStyle]}>
+                {this.characterIcons[this.textBoxes[this.state.currentId][1]]}
+            </Animated.View>
 
           </View>
         </TouchableWithoutFeedback>
@@ -141,7 +209,7 @@ const containerStyles = StyleSheet.create({
     justifyContent: 'center',
     zIndex: 2,
   },
-  characterView: {
+  characterViewAnimation: {
     zIndex: 4,
     position: 'absolute',
     bottom: 0,
@@ -153,11 +221,15 @@ const containerStyles = StyleSheet.create({
 });
 
 const componentStyles = StyleSheet.create({
-  textBubble: {
+  textBubbleAnimation: {
     zIndex: 2,
     width: '74%',
     height: '62%',
     bottom: '25%',
+  },
+  textBubble: {
+    zIndex: 2,
+    height: '100%',
     backgroundColor: '#FFFFFF',
     borderWidth: 0,
     borderRadius: screenWidth * .1,
