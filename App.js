@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TouchableWithoutFeedback, ImageBackground, Dimensions, Animated, Easing, Image } from 'react-native';
+import { StyleSheet, Text, View, TouchableWithoutFeedback, ImageBackground, Dimensions, Animated, Easing } from 'react-native';
 import Icon from 'react-native-vector-icons/Fontisto';
 import * as SplashScreen from 'expo-splash-screen';
 
@@ -49,15 +49,10 @@ class App extends Component {
 
     // In order to add a character, just add the SVG in the "components" folder
     this.characterIcons = {
-      // "excited": <ExcitedCharacter style={containerStyles.character} key="excited" />,
-      // "happy": <HappyCharacter style={containerStyles.character} key="happy" />,
-      // "neutral": <NeutralCharacter style={containerStyles.character} key="neutral" />,
-      // "sad": <SadCharacter style={containerStyles.character} key="sad" />
-
-      "excited": <Image source={require('./assets/images/excited.png')} />,
-      "happy": <Image source={require('./assets/images/happy.png')} />,
-      "neutral": <Image source={require('./assets/images/neutral.png')} />,
-      "sad": <Image source={require('./assets/images/sad.png')} />,
+      "excited": <ExcitedCharacter style={containerStyles.character} key="excited" />,
+      "happy": <HappyCharacter style={containerStyles.character} key="happy" />,
+      "neutral": <NeutralCharacter style={containerStyles.character} key="neutral" />,
+      "sad": <SadCharacter style={containerStyles.character} key="sad" />
     }
   };
 
@@ -191,7 +186,7 @@ class App extends Component {
 
             <Animated.View style={[containerStyles.characterViewAnimation, characterAnimationStyle]}>
               <View style={containerStyles.characterView}>
-                  {this.characterIcons[this.textBoxes[this.state.currentId][1]]}
+                {this.characterIcons[this.textBoxes[this.state.currentId][1]]}
               </View>
             </Animated.View>
 
@@ -218,7 +213,7 @@ const containerStyles = StyleSheet.create({
   },
   characterView: {
     height: '100%',
-    width: '100%',
+    width: '100%'
   },
   characterViewAnimation: {
     zIndex: 4,
