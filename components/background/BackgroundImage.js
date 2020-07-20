@@ -8,14 +8,7 @@ function BackgroundImage(props) {
     var screenHeight = height;
 
     return (
-        <Svg
-            width={screenWidth}
-            height={screenHeight}
-            viewBox="0 0 360 812"
-            fill="none"
-            preserveAspectRatio="xMaxYMax slice"
-            {...props}
-        >
+        <Svg width={screenWidth} height={screenHeight} viewBox="0 0 360 812" fill="none" preserveAspectRatio="xMaxYMax slice" {...props}>
             <G clipPath="url(#prefix__clip0)">
                 <Path fill="url(#prefix__paint0_linear)" d="M0 0h375v812H0z" />
                 <Ellipse
