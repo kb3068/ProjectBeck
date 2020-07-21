@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TouchableWithoutFeedback, ImageBackground, Dimensions, Animated, Easing, Image } from 'react-native';
+import { StyleSheet, Text, View, TouchableWithoutFeedback, ImageBackground, Dimensions, Animated, Easing, Image, AppState } from 'react-native';
 import Icon from 'react-native-vector-icons/Fontisto';
 import * as SplashScreen from 'expo-splash-screen';
 
@@ -38,8 +38,10 @@ class App extends Component {
       typewriterEffect: true,
       startWriting: false,
       bubbleTransform: new Animated.Value(0),
-      characterTransform: new Animated.Value(0)
+      characterTransform: new Animated.Value(0),
+      appState: 'active'
     };
+    AppState.addEventListener('change', newState => this.setState({ appState: newState }));
 
     // The second item in the list controls which character will show up (these strings must match with the keys in this.characterIcons)
     this.textBoxes = {
@@ -202,7 +204,7 @@ class App extends Component {
 
             <Animated.View style={[containerStyles.characterViewAnimation, characterAnimationStyle]}>
               <View style={containerStyles.characterView}>
-                <Image source={character} />
+                <Image source={this.state.appState === 'active' ? character : ''} fadeDuration={0} />
               </View>
             </Animated.View>
 
