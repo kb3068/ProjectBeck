@@ -37,8 +37,7 @@ class App extends Component {
       typewriterEffect: true,
       startWriting: false,
       bubbleTransform: new Animated.Value(0),
-      characterTransform: new Animated.Value(0),
-      characterLoaded: true
+      characterTransform: new Animated.Value(0)
     };
 
     // The second item in the list controls which character will show up (these strings must match with the keys in this.characterIcons)
@@ -48,25 +47,19 @@ class App extends Component {
       3: ["Please enter your name.", "neutral"],
     }
 
-    // In order to add a character, just add the SVG in the "components" folder
+    // In order to add a character, just add the image in the "assets" folder
     this.characterIcons = {
       // "excited": <ExcitedCharacter style={containerStyles.character} key="excited" />,
       // "happy": <HappyCharacter style={containerStyles.character} key="happy" />,
       // "neutral": <NeutralCharacter style={containerStyles.character} key="neutral" />,
       // "sad": <SadCharacter style={containerStyles.character} key="sad" />
 
-      // "excited": <Image source={require('./assets/images/excited.png')} />,
-      // "happy": <Image source={require('./assets/images/happy.png')} />,
-      // "neutral": <Image source={require('./assets/images/neutral.png')} />,
-      // "sad": <Image source={require('./assets/images/sad.png')} />,
+      "excited": <Image source={require('./assets/images/excited.png')} fadeDuration={0}/>,
+      "happy": <Image source={require('./assets/images/happy.png')} fadeDuration={0}/>,
+      "neutral": <Image source={require('./assets/images/neutral.png')} fadeDuration={0}/>,
+      "sad": <Image source={require('./assets/images/sad.png')} fadeDuration={0}/>,
     }
   };
-
-  renderPage = () => {
-    if (this.state.characterLoaded == false) {
-      this.setState({ charactersLoaded: true });
-    }
-  }
 
   async componentDidMount() {
     // Creates an instance of Audio.sound
@@ -120,7 +113,6 @@ class App extends Component {
 
   // Changes the text and image to that of the following "page" in the intro sequence
   goToNext = () => {
-    this.setState({ charactersLoaded: false });
     if (this.state.typewriterEffect == true) {
       this.setState({ typewriterEffect: false });
     }
@@ -139,21 +131,6 @@ class App extends Component {
   };
 
   render() {
-    var link;
-    var emotion = this.textBoxes[this.state.currentId][1];
-    if (emotion == 'excited') {
-      link = require('./assets/images/excited.png')
-    }
-    else if (emotion == 'happy') {
-      link = require('./assets/images/happy.png')
-    }
-    else if (emotion == 'neutral') {
-      link = require('./assets/images/neutral.png')
-    }
-    else if (emotion == 'sad') {
-      link = require('./assets/images/sad.png')
-    }
-
     const textAnimationStyle = {
       transform: [{ scale: this.state.bubbleTransform }]
     }
@@ -191,15 +168,6 @@ class App extends Component {
         />
       );
     }
-    else if (this.state.characterLoaded == false) {
-      return (
-        <View style={containerStyles.container}>
-          <ImageBackground style={containerStyles.standardBackground}>
-            <BackgroundImage />
-          </ImageBackground>
-        </View>
-      )
-    }
     else {
       return (
         <TouchableWithoutFeedback onPress={this.goToNext}>
@@ -223,10 +191,7 @@ class App extends Component {
 
             <Animated.View style={[containerStyles.characterViewAnimation, characterAnimationStyle]}>
               <View style={containerStyles.characterView}>
-                <Image source={link}
-                  onRender={this.renderPage()}
-                  ref={(thisImage) => { this[`characterImage`] = thisImage }}
-                  />
+                {this.characterIcons[this.textBoxes[this.state.currentId][1]]}
               </View>
             </Animated.View>
 
