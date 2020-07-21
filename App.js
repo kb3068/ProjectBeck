@@ -16,11 +16,12 @@ import { AppLoading } from 'expo';
 // Background SVG
 import BackgroundImage from './components/background/BackgroundImage';
 
-// Character SVGs
-import ExcitedCharacter from './components/character/ExcitedCharacter';
-import HappyCharacter from './components/character/HappyCharacter';
-import NeutralCharacter from './components/character/NeutralCharacter';
-import SadCharacter from './components/character/SadCharacter';
+// Character PNGs
+import excitedCharacter from './assets/images/excited.png';
+import happyCharacter from './assets/images/happy.png';
+import neutralCharacter from './assets/images/neutral.png';
+import sadCharacter from './assets/images/sad.png';
+
 
 // Used to make the left icon and CSS attributes such as fontSize relative to the screen size
 const { width, height } = Dimensions.get("window");
@@ -47,17 +48,12 @@ class App extends Component {
       3: ["Please enter your name.", "neutral"],
     }
 
-    // In order to add a character, just add the image in the "assets" folder
+    // In order to add a character, just add the image in the "assets" folder and import it above
     this.characterIcons = {
-      // "excited": <ExcitedCharacter style={containerStyles.character} key="excited" />,
-      // "happy": <HappyCharacter style={containerStyles.character} key="happy" />,
-      // "neutral": <NeutralCharacter style={containerStyles.character} key="neutral" />,
-      // "sad": <SadCharacter style={containerStyles.character} key="sad" />
-
-      "excited": <Image source={require('./assets/images/excited.png')} fadeDuration={0}/>,
-      "happy": <Image source={require('./assets/images/happy.png')} fadeDuration={0}/>,
-      "neutral": <Image source={require('./assets/images/neutral.png')} fadeDuration={0}/>,
-      "sad": <Image source={require('./assets/images/sad.png')} fadeDuration={0}/>,
+      // "excited": <Image source={require('./assets/images/excited.png')} fadeDuration={0}/>,
+      // "happy": <Image source={require('./assets/images/happy.png')} fadeDuration={0}/>,
+      // "neutral": <Image source={require('./assets/images/neutral.png')} fadeDuration={0}/>,
+      // "sad": <Image source={require('./assets/images/sad.png')} fadeDuration={0}/>,
     }
   };
 
@@ -69,7 +65,7 @@ class App extends Component {
     // Makes the soundtrack loop
     soundObject.setIsLoopingAsync(true);
     // Sets the volume of the soundtrack (must be between 0 and 1)
-    soundObject.setVolumeAsync(0.35);
+    soundObject.setVolumeAsync(0.45);
     // Plays sound
     await soundObject.playAsync();
 
@@ -131,6 +127,21 @@ class App extends Component {
   };
 
   render() {
+    var emotion = this.textBoxes[this.state.currentId][1];
+    var character;
+    if (emotion == "excited") {
+      character = excitedCharacter;
+    }
+    else if (emotion == "happy") {
+      character = happyCharacter;
+    }
+    else if (emotion == "neutral") {
+      character = neutralCharacter;
+    }
+    else if (emotion == "sad") {
+      character = sadCharacter;
+    }
+
     const textAnimationStyle = {
       transform: [{ scale: this.state.bubbleTransform }]
     }
@@ -191,7 +202,7 @@ class App extends Component {
 
             <Animated.View style={[containerStyles.characterViewAnimation, characterAnimationStyle]}>
               <View style={containerStyles.characterView}>
-                {this.characterIcons[this.textBoxes[this.state.currentId][1]]}
+                <Image source={character} />
               </View>
             </Animated.View>
 
