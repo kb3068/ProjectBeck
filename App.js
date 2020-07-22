@@ -15,6 +15,8 @@ import { AppLoading } from 'expo';
 
 // Background SVG
 import BackgroundImage from './components/background/BackgroundImage';
+import TallerBackground from './components/background/TallerBackground';
+import backgroundPNG from './assets/images/tallerBackground.png';
 
 // Character PNGs
 import excitedCharacter from './assets/images/excited.png';
@@ -186,9 +188,7 @@ class App extends Component {
         <TouchableWithoutFeedback onPress={this.goToNext}>
           <View style={containerStyles.container}>
 
-            <ImageBackground style={containerStyles.standardBackground}>
-              <BackgroundImage />
-            </ImageBackground>
+            <ImageBackground source={backgroundPNG} style={containerStyles.standardBackground}>
 
             <Animated.View style={[componentStyles.textBubbleAnimation, textAnimationStyle]}>
               <View style={componentStyles.textBubble}>
@@ -208,6 +208,8 @@ class App extends Component {
               </View>
             </Animated.View>
 
+            </ImageBackground>
+
           </View>
         </TouchableWithoutFeedback>
       );
@@ -216,18 +218,20 @@ class App extends Component {
 }
 
 const containerStyles = StyleSheet.create({
-  standardBackground: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-    // resizeMode: 'cover',
-    zIndex: 1,
-  },
   container: {
-    height: '100%',
+    flex: 1,
+    // height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 2,
+  },
+  standardBackground: {
+    flex: 1,
+    width: '110%',
+    // height: '100%',
+    resizeMode: 'cover',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   characterView: {
     height: '100%',
@@ -249,7 +253,7 @@ const componentStyles = StyleSheet.create({
     zIndex: 2,
     width: '74%',
     height: '62%',
-    bottom: '25%',
+    bottom: '6%',
   },
   textBubble: {
     zIndex: 2,
