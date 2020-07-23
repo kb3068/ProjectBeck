@@ -13,10 +13,7 @@ import TypeWriter from "react-native-typewriter";
 import * as Font from 'expo-font';
 import { AppLoading } from 'expo';
 
-// Background SVG
-import BackgroundImage from './components/background/BackgroundImage';
-import TallerBackground from './components/background/TallerBackground';
-import backgroundPNG from './assets/images/tallerBackground.png';
+// Background PNG
 import background from './assets/images/background.png';
 
 // Character PNGs
@@ -46,19 +43,11 @@ class App extends Component {
     };
     AppState.addEventListener('change', newState => this.setState({ appState: newState }));
 
-    // The second item in the list controls which character will show up (these strings must match with the keys in this.characterIcons)
+    // The second item in the list controls which character will show up
     this.textBoxes = {
       1: ["Hello, welcome to Project Beck!", "excited"],
       2: ["I’m so excited to meet you.", "happy"],
       3: ["Please enter your name.", "neutral"],
-    }
-
-    // In order to add a character, just add the image in the "assets" folder and import it above
-    this.characterIcons = {
-      // "excited": <Image source={require('./assets/images/excited.png')} fadeDuration={0}/>,
-      // "happy": <Image source={require('./assets/images/happy.png')} fadeDuration={0}/>,
-      // "neutral": <Image source={require('./assets/images/neutral.png')} fadeDuration={0}/>,
-      // "sad": <Image source={require('./assets/images/sad.png')} fadeDuration={0}/>,
     }
   };
 
@@ -205,7 +194,7 @@ class App extends Component {
 
             <Animated.View style={[containerStyles.characterViewAnimation, characterAnimationStyle]}>
               <View style={containerStyles.characterView}>
-                <Image source={this.state.appState === 'active' ? character : ''} fadeDuration={0} />
+                <Image source={character} fadeDuration={0} />
               </View>
             </Animated.View>
 
@@ -221,7 +210,6 @@ class App extends Component {
 const containerStyles = StyleSheet.create({
   container: {
     flex: 1,
-    // height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 2,
@@ -229,7 +217,6 @@ const containerStyles = StyleSheet.create({
   standardBackground: {
     flex: 1,
     width: '100%',
-    // height: '100%',
     resizeMode: 'cover',
     alignItems: 'center',
     justifyContent: 'center',
