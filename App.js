@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TouchableWithoutFeedback, ImageBackground, Dimensions, Animated, Easing, Image } from 'react-native';
+import { StyleSheet, Text, View, TouchableWithoutFeedback, ImageBackground, Dimensions, Animated, Easing, Image, AppState } from 'react-native';
 import Icon from 'react-native-vector-icons/Fontisto';
 import * as SplashScreen from 'expo-splash-screen';
 
@@ -22,6 +22,7 @@ import happyCharacter from './assets/images/happy.png';
 import neutralCharacter from './assets/images/neutral.png';
 import sadCharacter from './assets/images/sad.png';
 
+
 // Used to make the left icon and CSS attributes such as fontSize relative to the screen size
 const { width, height } = Dimensions.get("window");
 const screenWidth = width;
@@ -37,8 +38,10 @@ class App extends Component {
       typewriterEffect: true,
       startWriting: false,
       bubbleTransform: new Animated.Value(0),
-      characterTransform: new Animated.Value(0)
+      characterTransform: new Animated.Value(0),
+      appState: 'active'
     };
+    AppState.addEventListener('change', newState => this.setState({ appState: newState }));
 
     // The second item in the list controls which character will show up
     this.textBoxes = {
