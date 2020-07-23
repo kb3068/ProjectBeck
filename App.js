@@ -17,6 +17,7 @@ import { AppLoading } from 'expo';
 import BackgroundImage from './components/background/BackgroundImage';
 import TallerBackground from './components/background/TallerBackground';
 import backgroundPNG from './assets/images/tallerBackground.png';
+import background from './assets/images/background.png';
 
 // Character PNGs
 import excitedCharacter from './assets/images/excited.png';
@@ -188,7 +189,7 @@ class App extends Component {
         <TouchableWithoutFeedback onPress={this.goToNext}>
           <View style={containerStyles.container}>
 
-            <ImageBackground source={backgroundPNG} style={containerStyles.standardBackground}>
+            <ImageBackground source={background} style={containerStyles.standardBackground}>
 
             <Animated.View style={[componentStyles.textBubbleAnimation, textAnimationStyle]}>
               <View style={componentStyles.textBubble}>
@@ -227,7 +228,7 @@ const containerStyles = StyleSheet.create({
   },
   standardBackground: {
     flex: 1,
-    width: '110%',
+    width: '100%',
     // height: '100%',
     resizeMode: 'cover',
     alignItems: 'center',
