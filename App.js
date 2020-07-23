@@ -207,7 +207,6 @@ class App extends Component {
   }
 }
 
-
 const containerStyles = StyleSheet.create({
   container: {
     flex: 1,
