@@ -3,13 +3,16 @@ import { StyleSheet, Text, View, TouchableWithoutFeedback, ImageBackground, Dime
 import Icon from 'react-native-vector-icons/Fontisto';
 import * as SplashScreen from 'expo-splash-screen';
 
+// Radio Button Component
+import RadioButton from './components/RadioButton';
+
 // Expo-av module for background audio
 import { Audio } from "expo-av";
 
 // Typewriter effect
 import TypeWriter from "react-native-typewriter";
 
-// Custom Font - Oxygen Light
+// Custom Font - Oxygen
 import * as Font from 'expo-font';
 import { AppLoading } from 'expo';
 
@@ -29,6 +32,29 @@ const screenWidth = width;
 const screenHeight = height;
 var iconSize = screenWidth / 10;
 
+const genderOptions = [
+  {
+    key: 'male',
+    text: 'Male',
+  },
+  {
+    key: 'female',
+    text: 'Female',
+  },
+  {
+    key: 'transgender',
+    text: 'Transgender',
+  },
+  {
+    key: 'genderqueerNonBinary',
+    text: 'Genderqueer/Non-Binary',
+  },
+  {
+    key: 'preferNotToAnswer',
+    text: 'Prefer Not To Answer',
+  },
+];
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -45,9 +71,10 @@ class App extends Component {
 
     // The second item in the list controls which character will show up
     this.textBoxes = {
-      1: ["Hello, welcome to Project Beck!", "excited"],
-      2: ["I’m so excited to meet you.", "happy"],
-      3: ["Please enter your name.", "neutral"],
+      1: ["Hello, welcome to Project Beck!", "happy", "text"],
+      2: ["I’m so excited to meet you.", "excited", "text"],
+      3: ["Please enter your name.", "neutral", "text"],
+      4: ["What's your gender?", "neutral", "input"],
     }
   };
 
@@ -157,10 +184,16 @@ class App extends Component {
       textType.push();
     }
     else if (this.state.typewriterEffect) {
-      textType.push(<TypeWriter key="typewriter" style={componentStyles.text} typing={1} fixed={false} onTypingEnd={this.goToNext} maxDelay={35}>{this.textBoxes[this.state.currentId][0]}</TypeWriter>);
+      textType.push(<TypeWriter key="typewriter" style={componentStyles.text} typing={1} fixed={false} onTypingEnd={this.goToNext} maxDelay={35} fixed={true}>{this.textBoxes[this.state.currentId][0]}</TypeWriter>);
     }
     else {
       textType.push(<Text key="text" style={componentStyles.text}>{this.textBoxes[this.state.currentId][0]}</Text>);
+    }
+
+    // Controls whether an input option shows up
+    var inputQuestion = [];
+    if (this.textBoxes[this.state.currentId][2] == "input") {
+      inputQuestion = <View style={containerStyles.genderOptionsView}><RadioButton options={genderOptions} /></View>
     }
 
     // Waits to load the page until the custom font is loaded
@@ -187,7 +220,8 @@ class App extends Component {
                 </View>
 
                 <View style={componentStyles.textView}>
-                  {textType}
+                    {textType}
+                    {inputQuestion}
                 </View>
               </View>
             </Animated.View>
@@ -234,12 +268,17 @@ const containerStyles = StyleSheet.create({
   character: {
     zIndex: 3,
   },
+  genderOptionsView: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: '10%'
+  }
 });
 
 const componentStyles = StyleSheet.create({
   textBubbleAnimation: {
     zIndex: 2,
-    width: '74%',
+    width: '92%',
     height: '62%',
     bottom: '6%',
   },
@@ -260,16 +299,18 @@ const componentStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingBottom: '30%',
-    paddingLeft: '15%',
-    paddingRight: '15%',
+    paddingLeft: '12%',
+    paddingRight: '12%',
   },
   text: {
     fontFamily: 'oxygen-light',
     fontSize: screenWidth * .072,
     flexWrap: 'wrap',
-    lineHeight: screenWidth * .108,
+    // lineHeight: screenWidth * .108,
     textAlign: 'left',
-    color: '#195D70'
+    color: '#195D70',
+    paddingBottom: 0,
+    marginBottom: 0,
   },
   iconView: {
     justifyContent: 'space-around',
