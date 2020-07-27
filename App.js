@@ -50,8 +50,8 @@ const genderOptions = [
     text: 'Genderqueer/Non-Binary',
   },
   {
-    key: 'preferNotToAnswer',
-    text: 'Prefer Not To Answer',
+    key: 'other',
+    text: 'Other',
   },
 ];
 
