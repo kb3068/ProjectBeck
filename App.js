@@ -65,7 +65,8 @@ class App extends Component {
       startWriting: false,
       bubbleTransform: new Animated.Value(0),
       characterTransform: new Animated.Value(0),
-      appState: 'active'
+      appState: 'active',
+      gender: 'Other'
     };
     AppState.addEventListener('change', newState => this.setState({ appState: newState }));
 
@@ -147,6 +148,13 @@ class App extends Component {
     }
   };
 
+  // Updates the gender of the user when one of the radio buttons is selected
+  onGenderInput = (val) => {
+    this.setState({
+      gender: val
+    })
+  };
+
   render() {
     var emotion = this.textBoxes[this.state.currentId][1];
     var character;
@@ -163,6 +171,7 @@ class App extends Component {
       character = sadCharacter;
     }
 
+    // Animations
     const textAnimationStyle = {
       transform: [{ scale: this.state.bubbleTransform }]
     }
@@ -184,16 +193,27 @@ class App extends Component {
       textType.push();
     }
     else if (this.state.typewriterEffect) {
-      textType.push(<TypeWriter key="typewriter" style={componentStyles.text} typing={1} fixed={false} onTypingEnd={this.goToNext} maxDelay={35} fixed={true}>{this.textBoxes[this.state.currentId][0]}</TypeWriter>);
+      textType.push(
+        <TypeWriter key="typewriter" style={componentStyles.text} typing={1} fixed={false} onTypingEnd={this.goToNext} maxDelay={35} fixed={true}>
+          {this.textBoxes[this.state.currentId][0]}
+        </TypeWriter>
+      );
     }
     else {
-      textType.push(<Text key="text" style={componentStyles.text}>{this.textBoxes[this.state.currentId][0]}</Text>);
+      textType.push(
+        <Text key="text" style={componentStyles.text}>
+          {this.textBoxes[this.state.currentId][0]}
+        </Text>
+      );
     }
 
     // Controls whether an input option shows up
     var inputQuestion = [];
     if (this.textBoxes[this.state.currentId][2] == "input") {
-      inputQuestion = <View style={containerStyles.genderOptionsView}><RadioButton options={genderOptions} /></View>
+      inputQuestion =
+        <View style={containerStyles.genderOptionsView}>
+          <RadioButton options={genderOptions} onUpdate={this.onGenderInput} />
+        </View>
     }
 
     // Waits to load the page until the custom font is loaded
@@ -213,24 +233,24 @@ class App extends Component {
 
             <ImageBackground source={background} style={containerStyles.standardBackground}>
 
-            <Animated.View style={[componentStyles.textBubbleAnimation, textAnimationStyle]}>
-              <View style={componentStyles.textBubble}>
-                <View style={componentStyles.iconView} onPress={this.goBack}>
-                  <Icon name="angle-left" size={iconSize} color="#095266" style={componentStyles.leftIcon} onPress={this.goBack} />
-                </View>
+              <Animated.View style={[componentStyles.textBubbleAnimation, textAnimationStyle]}>
+                <View style={componentStyles.textBubble}>
+                  <View style={componentStyles.iconView} onPress={this.goBack}>
+                    <Icon name="angle-left" size={iconSize} color="#095266" style={componentStyles.leftIcon} onPress={this.goBack} />
+                  </View>
 
-                <View style={componentStyles.textView}>
+                  <View style={componentStyles.textView}>
                     {textType}
                     {inputQuestion}
+                  </View>
                 </View>
-              </View>
-            </Animated.View>
+              </Animated.View>
 
-            <Animated.View style={[containerStyles.characterViewAnimation, characterAnimationStyle]}>
-              <View style={containerStyles.characterView}>
-                <Image source={character} fadeDuration={0} />
-              </View>
-            </Animated.View>
+              <Animated.View style={[containerStyles.characterViewAnimation, characterAnimationStyle]}>
+                <View style={containerStyles.characterView}>
+                  <Image source={character} fadeDuration={0} />
+                </View>
+              </Animated.View>
 
             </ImageBackground>
 

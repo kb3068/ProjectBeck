@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import * as Font from 'expo-font';
 
-export default class RadioButton extends Component {
+class RadioButton extends Component {
     // Value of selected button can be utilized through "this.state.value"
     state = {
         value: null,
@@ -16,6 +16,10 @@ export default class RadioButton extends Component {
         });
     }
 
+    update = (val) => {
+        this.props.onUpdate(val);
+    };
+
     render() {
         const { options } = this.props;
         const { value } = this.state;
@@ -28,6 +32,7 @@ export default class RadioButton extends Component {
                             <TouchableOpacity
                                 style={styles.radioCircle}
                                 onPress={() => {
+                                    this.update(res.text)
                                     this.setState({
                                         value: res.key,
                                     });
@@ -72,3 +77,5 @@ const styles = StyleSheet.create({
         backgroundColor: '#48a0e8',
     }
 });
+
+export default RadioButton;
