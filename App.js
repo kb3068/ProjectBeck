@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TouchableWithoutFeedback, ImageBackground, Dimensions, Animated, Easing, Image, AppState } from 'react-native';
+import { StyleSheet, Text, TextInput, View, TouchableWithoutFeedback, ImageBackground, Dimensions, Animated, Easing, Image, AppState } from 'react-native';
 import Icon from 'react-native-vector-icons/Fontisto';
 import * as SplashScreen from 'expo-splash-screen';
 
@@ -66,7 +66,8 @@ class App extends Component {
       bubbleTransform: new Animated.Value(0),
       characterTransform: new Animated.Value(0),
       appState: 'active',
-      gender: 'Other'
+      gender: 'Other',
+      firstName: ''
     };
     AppState.addEventListener('change', newState => this.setState({ appState: newState }));
 
@@ -74,8 +75,8 @@ class App extends Component {
     this.textBoxes = {
       1: ["Hello, welcome to Project Beck!", "happy", "text"],
       2: ["I’m so excited to meet you.", "excited", "text"],
-      3: ["Please enter your name.", "neutral", "text"],
-      4: ["What's your gender?", "neutral", "input"],
+      3: ["Please enter your first name?", "neutral", "textInput"],
+      4: ["What's your gender?", "neutral", "radioInput"],
     }
   };
 
@@ -207,12 +208,22 @@ class App extends Component {
       );
     }
 
-    // Controls whether an input option shows up
+    // Controls whether an input question shows up
     var inputQuestion = [];
-    if (this.textBoxes[this.state.currentId][2] == "input") {
+    if (this.textBoxes[this.state.currentId][2] == "radioInput") {
       inputQuestion =
         <View style={containerStyles.genderOptionsView}>
           <RadioButton options={genderOptions} onUpdate={this.onGenderInput} />
+        </View>
+    }
+    else if (this.textBoxes[this.state.currentId][2] == "textInput") {
+      inputQuestion =
+        <View style={containerStyles.genderOptionsView}>
+        <TextInput
+          style={componentStyles.textInput}
+          onChangeText={text => this.setState({'firstName': text})}
+          value={this.state.firstName}
+          ></TextInput>
         </View>
     }
 
@@ -291,7 +302,8 @@ const containerStyles = StyleSheet.create({
   genderOptionsView: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: '10%'
+    paddingTop: '10%',
+    width: '100%'
   }
 });
 
@@ -340,6 +352,17 @@ const componentStyles = StyleSheet.create({
     height: '100%',
     paddingTop: '8%',
     paddingLeft: '8%',
+  },
+  textInput: {
+    width: '85%', 
+    height: 49,
+    color: '#333333',
+    backgroundColor: '#EFF2F6',
+    borderWidth: 1,
+    borderRadius: screenWidth * .03,
+    fontFamily: 'oxygen-light',
+    fontSize: screenWidth * .05,
+    padding: 12
   }
 });
 
