@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TouchableWithoutFeedback, ImageBackground, Dimensions, Animated, Easing, Image, AppState } from 'react-native';
+import { StyleSheet, Text, TextInput, View, TouchableWithoutFeedback, ImageBackground, Dimensions, Animated, Easing, Image, AppState } from 'react-native';
 import Icon from 'react-native-vector-icons/Fontisto';
 import * as SplashScreen from 'expo-splash-screen';
+
+// Radio Button Component
+import RadioButton from './components/RadioButton';
 
 // Expo-av module for background audio
 import { Audio } from "expo-av";
@@ -9,7 +12,7 @@ import { Audio } from "expo-av";
 // Typewriter effect
 import TypeWriter from "react-native-typewriter";
 
-// Custom Font - Oxygen Light
+// Custom Font - Oxygen
 import * as Font from 'expo-font';
 import { AppLoading } from 'expo';
 
@@ -29,6 +32,29 @@ const screenWidth = width;
 const screenHeight = height;
 var iconSize = screenWidth / 10;
 
+const genderOptions = [
+  {
+    key: 'male',
+    text: 'Male',
+  },
+  {
+    key: 'female',
+    text: 'Female',
+  },
+  {
+    key: 'transgender',
+    text: 'Transgender',
+  },
+  {
+    key: 'genderqueerNonBinary',
+    text: 'Genderqueer/Non-Binary',
+  },
+  {
+    key: 'other',
+    text: 'Other',
+  },
+];
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -39,15 +65,18 @@ class App extends Component {
       startWriting: false,
       bubbleTransform: new Animated.Value(0),
       characterTransform: new Animated.Value(0),
-      appState: 'active'
+      appState: 'active',
+      gender: 'Other',
+      firstName: ''
     };
     AppState.addEventListener('change', newState => this.setState({ appState: newState }));
 
     // The second item in the list controls which character will show up
     this.textBoxes = {
-      1: ["Hello, welcome to Project Beck!", "excited"],
-      2: ["I’m so excited to meet you.", "happy"],
-      3: ["Please enter your name.", "neutral"],
+      1: ["Hello, welcome to Project Beck!", "happy", "text"],
+      2: ["I’m so excited to meet you.", "excited", "text"],
+      3: ["Please enter your first name?", "neutral", "textInput"],
+      4: ["What's your gender?", "neutral", "radioInput"],
     }
   };
 
@@ -120,6 +149,13 @@ class App extends Component {
     }
   };
 
+  // Updates the gender of the user when one of the radio buttons is selected
+  onGenderInput = (val) => {
+    this.setState({
+      gender: val
+    })
+  };
+
   render() {
     var emotion = this.textBoxes[this.state.currentId][1];
     var character;
@@ -136,6 +172,7 @@ class App extends Component {
       character = sadCharacter;
     }
 
+    // Animations
     const textAnimationStyle = {
       transform: [{ scale: this.state.bubbleTransform }]
     }
@@ -157,10 +194,37 @@ class App extends Component {
       textType.push();
     }
     else if (this.state.typewriterEffect) {
-      textType.push(<TypeWriter key="typewriter" style={componentStyles.text} typing={1} fixed={false} onTypingEnd={this.goToNext} maxDelay={35}>{this.textBoxes[this.state.currentId][0]}</TypeWriter>);
+      textType.push(
+        <TypeWriter key="typewriter" style={componentStyles.text} typing={1} fixed={false} onTypingEnd={this.goToNext} maxDelay={35} fixed={true}>
+          {this.textBoxes[this.state.currentId][0]}
+        </TypeWriter>
+      );
     }
     else {
-      textType.push(<Text key="text" style={componentStyles.text}>{this.textBoxes[this.state.currentId][0]}</Text>);
+      textType.push(
+        <Text key="text" style={componentStyles.text}>
+          {this.textBoxes[this.state.currentId][0]}
+        </Text>
+      );
+    }
+
+    // Controls whether an input question shows up
+    var inputQuestion = [];
+    if (this.textBoxes[this.state.currentId][2] == "radioInput") {
+      inputQuestion =
+        <View style={containerStyles.genderOptionsView}>
+          <RadioButton options={genderOptions} onUpdate={this.onGenderInput} />
+        </View>
+    }
+    else if (this.textBoxes[this.state.currentId][2] == "textInput") {
+      inputQuestion =
+        <View style={containerStyles.genderOptionsView}>
+        <TextInput
+          style={componentStyles.textInput}
+          onChangeText={text => this.setState({'firstName': text})}
+          value={this.state.firstName}
+          ></TextInput>
+        </View>
     }
 
     // Waits to load the page until the custom font is loaded
@@ -180,23 +244,24 @@ class App extends Component {
 
             <ImageBackground source={background} style={containerStyles.standardBackground}>
 
-            <Animated.View style={[componentStyles.textBubbleAnimation, textAnimationStyle]}>
-              <View style={componentStyles.textBubble}>
-                <View style={componentStyles.iconView} onPress={this.goBack}>
-                  <Icon name="angle-left" size={iconSize} color="#095266" style={componentStyles.leftIcon} onPress={this.goBack} />
-                </View>
+              <Animated.View style={[componentStyles.textBubbleAnimation, textAnimationStyle]}>
+                <View style={componentStyles.textBubble}>
+                  <View style={componentStyles.iconView} onPress={this.goBack}>
+                    <Icon name="angle-left" size={iconSize} color="#095266" style={componentStyles.leftIcon} onPress={this.goBack} />
+                  </View>
 
-                <View style={componentStyles.textView}>
-                  {textType}
+                  <View style={componentStyles.textView}>
+                    {textType}
+                    {inputQuestion}
+                  </View>
                 </View>
-              </View>
-            </Animated.View>
+              </Animated.View>
 
-            <Animated.View style={[containerStyles.characterViewAnimation, characterAnimationStyle]}>
-              <View style={containerStyles.characterView}>
-                <Image source={character} fadeDuration={0} />
-              </View>
-            </Animated.View>
+              <Animated.View style={[containerStyles.characterViewAnimation, characterAnimationStyle]}>
+                <View style={containerStyles.characterView}>
+                  <Image source={character} fadeDuration={0} />
+                </View>
+              </Animated.View>
 
             </ImageBackground>
 
@@ -234,12 +299,18 @@ const containerStyles = StyleSheet.create({
   character: {
     zIndex: 3,
   },
+  genderOptionsView: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: '10%',
+    width: '100%'
+  }
 });
 
 const componentStyles = StyleSheet.create({
   textBubbleAnimation: {
     zIndex: 2,
-    width: '74%',
+    width: '92%',
     height: '62%',
     bottom: '6%',
   },
@@ -260,16 +331,18 @@ const componentStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingBottom: '30%',
-    paddingLeft: '15%',
-    paddingRight: '15%',
+    paddingLeft: '12%',
+    paddingRight: '12%',
   },
   text: {
     fontFamily: 'oxygen-light',
     fontSize: screenWidth * .072,
     flexWrap: 'wrap',
-    lineHeight: screenWidth * .108,
+    // lineHeight: screenWidth * .108,
     textAlign: 'left',
-    color: '#195D70'
+    color: '#195D70',
+    paddingBottom: 0,
+    marginBottom: 0,
   },
   iconView: {
     justifyContent: 'space-around',
@@ -279,6 +352,17 @@ const componentStyles = StyleSheet.create({
     height: '100%',
     paddingTop: '8%',
     paddingLeft: '8%',
+  },
+  textInput: {
+    width: '85%', 
+    height: 49,
+    color: '#333333',
+    backgroundColor: '#EFF2F6',
+    borderWidth: 1,
+    borderRadius: screenWidth * .03,
+    fontFamily: 'oxygen-light',
+    fontSize: screenWidth * .05,
+    padding: 12
   }
 });
 
