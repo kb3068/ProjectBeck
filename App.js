@@ -263,7 +263,7 @@ class App extends Component {
       );
     }
 
-    // Controls whether an input question shows up
+    // If question is "What's your gender?", then show the genderOptions
     var inputQuestion = [];
     if (this.textBoxes[this.state.currentId][0] == "What's your gender?") {
       inputQuestion = (
@@ -272,7 +272,7 @@ class App extends Component {
         </View>
       );
     }
-    ///////////////////////////////////////////////////////////////////////////////////////////////////
+    // If question is "Over the last 2 weeks, how often did you have little interest/pleasure in doing things?", then show the phq9Options
     else if (
       this.textBoxes[this.state.currentId][0] ==
       "Over the last 2 weeks, how often did you have little interest/pleasure in doing things?"
