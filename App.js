@@ -16,6 +16,8 @@ import TypeWriter from "react-native-typewriter";
 import * as Font from 'expo-font';
 import { AppLoading } from 'expo';
 
+import { ViewStyleProp, TextStyleProp, } from 'react-native'
+
 // Background PNG
 import background from './assets/images/background.png';
 
@@ -28,6 +30,10 @@ import sadCharacter from './assets/images/sad.png';
 // Segmented Control Tab for multiple choice
 import SegmentedControlTab from "react-native-segmented-control-tab";
 
+Props = {
+  tabStyle: ViewStyleProp,
+  textNumberOfLines: 4,
+}
 // Used to make the left icon and CSS attributes such as fontSize relative to the screen size
 const { width, height } = Dimensions.get("window");
 const screenWidth = width;
@@ -71,14 +77,12 @@ class App extends Component {
       gender: 'Other',
       firstName: '',
       selectedIndex: 0,
-      selectedIndices: [0],
-      customStyleIndex: 0
     };
-    
+
 
     AppState.addEventListener('change', newState => this.setState({ appState: newState }));
 
-    
+
     // The second item in the list controls which character will show up
     this.textBoxes = {
       1: ["Hello, welcome to Project Beck!", "happy", "text"],
@@ -86,7 +90,7 @@ class App extends Component {
       3: ["Please enter your first name?", "neutral", "textInput"],
       4: ["What's your gender?", "neutral", "radioInput"],
       5: ["Over the last 2 weeks, how often did you have little interest/pleasure in doing things?",
-        "neutral", "segmentedControlTab"]
+        "", "segmentedControlTab"]
     }
   };
 
@@ -123,6 +127,7 @@ class App extends Component {
   handleIndexChange = index => {
     this.setState({ selectedIndex: index });
   };
+
 
   // Starts the text bubble animation and then calls the character animation
   startTextAnimation = () => {
@@ -170,8 +175,9 @@ class App extends Component {
     })
   };
 
+
   render() {
-    const { selectedIndex, selectedIndices, customStyleIndex } = this.state
+    const { selectedIndex, textNumberOfLines } = this.state
     var emotion = this.textBoxes[this.state.currentId][1];
     var character;
     if (emotion == "excited") {
@@ -223,7 +229,7 @@ class App extends Component {
       );
     }
 
-  
+
     // Controls whether an input question shows up
     var inputQuestion = [];
     if (this.textBoxes[this.state.currentId][2] == "radioInput") {
@@ -242,29 +248,22 @@ class App extends Component {
           ></TextInput>
         </View>
     } else if (this.textBoxes[this.state.currentId][2] == "segmentedControlTab") {
+      let string1 = `Several days`
       inputQuestion =
-      // <View style={containerStyles.container}>
-      //   <Text>Little interest or pleasere in doing things.</Text>
-      //     <SegmentedControlTab
-      //     values={["Not at all", "Several days", "More than half\nthe days", "Nearly everyday"]}
-      //     selectedIndex={this.state.selectedIndex}
-      //     onTabPress={this.handleIndexChange}
-      //   />
-      //   </View>
-           <View style={containerStyles.Seperator} >
-        <Text style={componentStyles.smallText}>Little interest or pleasure in doing things.</Text>
-        <SegmentedControlTab
-          values={["Not at all", "Several days", "More than half the days", "Nearly everyday"]}
-          selectedIndex={this.state.selectedIndex}
-          onTabPress={this.handleIndexChange}
-          borderRadius={10}
-          tabsContainerStyle={segmentedControlTabStyles.tabsContainerStyle}
-          tabStyle={segmentedControlTabStyles.tabStyle}
-          activeTabStyle={segmentedControlTabStyles.activeTabStyle}
-          tabTextStyle={segmentedControlTabStyles.tabTextStyle}
-          activeTabTextStyle={segmentedControlTabStyles.activeTabTextStyle}
-        />
-      </View>
+        <View style={containerStyles.Seperator} >
+          <Text style={componentStyles.smallText}>Little interest or pleasure in doing things.</Text>
+          <SegmentedControlTab textNumberOfLines={4}
+            values={["Not at all", "Several\ndays", "More than half the\ndays", "Nearly everyday"]}
+            selectedIndex={this.state.selectedIndex}
+            onTabPress={this.handleIndexChange}
+            borderRadius={10}
+            tabsContainerStyle={segmentedControlTabStyles.tabsContainerStyle}
+            tabStyle={segmentedControlTabStyles.tabStyle}
+            activeTabStyle={segmentedControlTabStyles.activeTabStyle}
+            tabTextStyle={segmentedControlTabStyles.tabTextStyle}
+            activeTabTextStyle={segmentedControlTabStyles.activeTabTextStyle}
+          />
+        </View>
     }
 
     // Waits to load the page until the custom font is loaded
@@ -420,26 +419,44 @@ const componentStyles = StyleSheet.create({
 
 const segmentedControlTabStyles = StyleSheet.create({
   tabsContainerStyle: {
-    height: 100, 
-    backgroundColor: '#F2F2F2', 
-    width: 300 
+    height: 80,
+    backgroundColor: '#F2F2F2',
+    width: 300,
+    borderRadius: 10
   },
   tabStyle: {
     backgroundColor: '#F2F2F2',
-    borderWidth: 0, 
-    borderColor: 'transparent'
+    borderWidth: 0,
+    borderColor: 'transparent',
   },
-  activeTabStyle: { 
-    backgroundColor: 'white', 
-    margin: 2, 
-    borderRadius: 10 
+  activeTabStyle: {
+    backgroundColor: 'white',
+    margin: 5,
+    borderRadius: 10, 
+    shadowColor: '#000000',
+    shadowOffset: {
+      width: 0,
+      height: screenWidth * .001
+    },
+    shadowRadius: 2,
+    shadowOpacity: .6
   },
   tabTextStyle: {
-     color: '#195D70' 
+    color: '#BBBBBB',
+    flexWrap: "wrap",
+    alignSelf: "center",
+    justifyContent: "center",
+    textAlign: "center",
+    fontFamily: 'oxygen-regular',
+
   },
-  activeTabTextStyle: { 
-    color: '#195D70'
-  }
+  activeTabTextStyle: {
+    color: '#195D70',
+    textAlign: "center",
+    flexWrap: "wrap",
+    fontFamily: 'oxygen-regular',
+    opacity: 1
+  },
 });
 
 export default App;
