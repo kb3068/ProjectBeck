@@ -43,6 +43,8 @@ var total = 0;
 var IDs = [];
 var text;
 
+const phq9Values = ["Not at all", "Several\ndays", "More than half the\ndays", "Nearly everyday"]
+const lastQuestion = ["Not at all", "Somewhat difficult", "Very diffucult", "Extremely difficult"]
 
 const genderOptions = [
   {
@@ -111,6 +113,8 @@ class App extends Component {
         "", "segmentedControlTab"],
       13: ["Over the last 2 weeks, how often did you have thoughts that you would be better off dead, or thoughts of hurting yourself in some way?",
         "", "segmentedControlTab"],
+      14: ["How difficult have these problems made it to do work, take care of things at home, or get along with other people?", "", "segmentedControlTab"],
+      15: ["", "", "text"],
     }
   };
 
@@ -145,45 +149,51 @@ class App extends Component {
   }
 
   handleIndexChange = index => {
-    this.setState({ selectedIndex: index });
-    IDs.push(this.state.currentId + '' + index);
-    var id5 = IDs.filter((id) => id.charAt(0) === '5');
-    var id6 = IDs.filter((id) => id.charAt(0) === '6');
-    var id7 = IDs.filter((id) => id.charAt(0) === '7');
-    var id8 = IDs.filter((id) => id.charAt(0) === '8');
-    var id9 = IDs.filter((id) => id.charAt(0) === '9');
-    var id10 = IDs.filter((id) => id.slice(0, 2) === '10');
-    var id11 = IDs.filter((id) => id.slice(0, 2) === '11');
-    var id12 = IDs.filter((id) => id.slice(0, 2) === '12');
-    var id13 = IDs.filter((id) => id.slice(0, 2) === '13');
-    if (this.state.currentId === 13) {
-      var ids = [id5, id6, id7, id8, id9, id10, id11, id12, id13]
-      var value;
-      for (var i = 0; i < ids.length; i++) {
-        value = this.getLastValue(ids[i]);
-        value = value.charAt(value.length - 1)
-        total += parseInt(value)
+    
+      this.setState({ selectedIndex: index });
+      console.log(index)
+      if (this.state.currentId != 14) {
+      IDs.push(this.state.currentId + '' + index);
+      var id5 = IDs.filter((id) => id.charAt(0) === '5');
+      var id6 = IDs.filter((id) => id.charAt(0) === '6');
+      var id7 = IDs.filter((id) => id.charAt(0) === '7');
+      var id8 = IDs.filter((id) => id.charAt(0) === '8');
+      var id9 = IDs.filter((id) => id.charAt(0) === '9');
+      var id10 = IDs.filter((id) => id.slice(0, 2) === '10');
+      var id11 = IDs.filter((id) => id.slice(0, 2) === '11');
+      var id12 = IDs.filter((id) => id.slice(0, 2) === '12');
+      var id13 = IDs.filter((id) => id.slice(0, 2) === '13');
+      if (this.state.currentId === 13) {
+        var ids = [id5, id6, id7, id8, id9, id10, id11, id12, id13]
+        var value;
+        for (var i = 0; i < ids.length; i++) {
+          value = this.getLastValue(ids[i]);
+          value = value.charAt(value.length - 1)
+          total += parseInt(value)
+        }
+        console.log(total)
       }
-    }
-    switch (true) {
-      case (total <= 4):
-        text = "Scores ≤4 suggest minimal depression which may not require treatment."
-        break;
-      case (total >= 5 && total <= 9):
-        text = 'Scores 5-9 suggest mild depression which may require only watchful waiting and repeated PHQ-9 at followup.'
-        break;
-      case (total >= 10 && total <= 14):
-        text = 'Scores 10-14 suggest moderate depression severity; patients should have a treatment plan ranging form counseling, followup, and/or pharmacotherapy.'
-        break;
-      case (total >= 15 && total <= 19):
-        text = 'Scores 15-19 suggest moderately severe depression; patients typically should have immediate initiation of pharmacotherapy and/or psychotherapy.'
-        break;
-      case (total >= 20):
-        text = 'Scores 20 and greater suggest severe depression; patients typically should have immediate initiation of pharmacotherapy and expedited referral to mental health specialist.'
-        break;
-      default:
-        text = ''
-        break;
+      switch (true) {
+        case (total <= 4):
+          text = "Scores ≤4 suggest minimal depression which may not require treatment."
+          break;
+        case (total >= 5 && total <= 9):
+          text = 'Scores 5-9 suggest mild depression which may require only watchful waiting and repeated PHQ-9 at followup.'
+          break;
+        case (total >= 10 && total <= 14):
+          text = 'Scores 10-14 suggest moderate depression severity; patients should have a treatment plan ranging form counseling, followup, and/or pharmacotherapy.'
+          break;
+        case (total >= 15 && total <= 19):
+          text = 'Scores 15-19 suggest moderately severe depression; patients typically should have immediate initiation of pharmacotherapy and/or psychotherapy.'
+          break;
+        case (total >= 20):
+          text = 'Scores 20 and greater suggest severe depression; patients typically should have immediate initiation of pharmacotherapy and expedited referral to mental health specialist.'
+          break;
+        default:
+          text = ''
+          break;
+      }
+      this.textBoxes[15][0] = text;
     }
   };
 
@@ -310,11 +320,16 @@ class App extends Component {
           ></TextInput>
         </View>
     } else if (this.textBoxes[this.state.currentId][2] == "segmentedControlTab") {
-      let string1 = `Several days`
+      var values;
+      if (this.state.currentId === 14){
+        values = lastQuestion;
+      } else {
+        values = phq9Values;
+      }
       inputQuestion =
         <View style={containerStyles.Seperator} >
           <SegmentedControlTab textNumberOfLines={4}
-            values={["Not at all", "Several\ndays", "More than half the\ndays", "Nearly everyday"]}
+            values={values}
             selectedIndex={this.state.selectedIndex}
             onTabPress={this.handleIndexChange}
             borderRadius={10}
