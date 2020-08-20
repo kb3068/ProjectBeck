@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, TextInput, View, TouchableWithoutFeedback, ImageBackground, Dimensions, Animated, Easing, Image, AppState } from 'react-native';
+import { StyleSheet, Text, TextInput, View, TouchableWithoutFeedback, ImageBackground, Dimensions, Animated, Easing, Image, AppState, Button } from 'react-native';
 import Icon from 'react-native-vector-icons/Fontisto';
 import * as SplashScreen from 'expo-splash-screen';
 
@@ -39,6 +39,10 @@ const { width, height } = Dimensions.get("window");
 const screenWidth = width;
 const screenHeight = height;
 var iconSize = screenWidth / 10;
+var total = 0;
+var IDs = [];
+var text;
+
 
 const genderOptions = [
   {
@@ -90,7 +94,23 @@ class App extends Component {
       3: ["Please enter your first name?", "neutral", "textInput"],
       4: ["What's your gender?", "neutral", "radioInput"],
       5: ["Over the last 2 weeks, how often did you have little interest/pleasure in doing things?",
-        "", "segmentedControlTab"]
+        "", "segmentedControlTab"],
+      6: ["Over the last 2 weeks, how often were you feeling down, depressed, or hopeless?",
+        "", "segmentedControlTab"],
+      7: ["Over the last 2 weeks, how often did you have trouble falling or staying asleep, or sleeping too much?",
+        "", "segmentedControlTab"],
+      8: ["Over the last 2 weeks, how often were you feeling tired or had little energy?",
+        "", "segmentedControlTab"],
+      9: ["Over the last 2 weeks, how often did you have a problem with poor appetite or overeating?",
+        "", "segmentedControlTab"],
+      10: ["Over the last 2 weeks, how often were you feeling bad about yourself — or that you are a failure or have let yourself or your family down?",
+        "", "segmentedControlTab"],
+      11: ["Over the last 2 weeks, how often did you have trouble concentrating on things, such as reading the newspaper or watching television?",
+        "", "segmentedControlTab"],
+      12: ["Over the last 2 weeks, how often were you moving or speaking so slowly that other people could have noticed? Or so fidgety or restless that you have been moving a lot more than usual?",
+        "", "segmentedControlTab"],
+      13: ["Over the last 2 weeks, how often did you have thoughts that you would be better off dead, or thoughts of hurting yourself in some way?",
+        "", "segmentedControlTab"],
     }
   };
 
@@ -126,8 +146,50 @@ class App extends Component {
 
   handleIndexChange = index => {
     this.setState({ selectedIndex: index });
+    IDs.push(this.state.currentId + '' + index);
+    var id5 = IDs.filter((id) => id.charAt(0) === '5');
+    var id6 = IDs.filter((id) => id.charAt(0) === '6');
+    var id7 = IDs.filter((id) => id.charAt(0) === '7');
+    var id8 = IDs.filter((id) => id.charAt(0) === '8');
+    var id9 = IDs.filter((id) => id.charAt(0) === '9');
+    var id10 = IDs.filter((id) => id.slice(0, 2) === '10');
+    var id11 = IDs.filter((id) => id.slice(0, 2) === '11');
+    var id12 = IDs.filter((id) => id.slice(0, 2) === '12');
+    var id13 = IDs.filter((id) => id.slice(0, 2) === '13');
+    if (this.state.currentId === 13) {
+      var ids = [id5, id6, id7, id8, id9, id10, id11, id12, id13]
+      var value;
+      for (var i = 0; i < ids.length; i++) {
+        value = this.getLastValue(ids[i]);
+        value = value.charAt(value.length - 1)
+        total += parseInt(value)
+      }
+    }
+    switch (true) {
+      case (total <= 4):
+        text = "Scores ≤4 suggest minimal depression which may not require treatment."
+        break;
+      case (total >= 5 && total <= 9):
+        text = 'Scores 5-9 suggest mild depression which may require only watchful waiting and repeated PHQ-9 at followup.'
+        break;
+      case (total >= 10 && total <= 14):
+        text = 'Scores 10-14 suggest moderate depression severity; patients should have a treatment plan ranging form counseling, followup, and/or pharmacotherapy.'
+        break;
+      case (total >= 15 && total <= 19):
+        text = 'Scores 15-19 suggest moderately severe depression; patients typically should have immediate initiation of pharmacotherapy and/or psychotherapy.'
+        break;
+      case (total >= 20):
+        text = 'Scores 20 and greater suggest severe depression; patients typically should have immediate initiation of pharmacotherapy and expedited referral to mental health specialist.'
+        break;
+      default:
+        text = ''
+        break;
+    }
   };
 
+  getLastValue = (array) => {
+    return (array[array.length - 1])
+  }
 
   // Starts the text bubble animation and then calls the character animation
   startTextAnimation = () => {
@@ -151,6 +213,7 @@ class App extends Component {
 
   // Changes the text and image to that of the following "page" in the intro sequence
   goToNext = () => {
+    this.state.selectedIndex = null;
     if (this.state.typewriterEffect == true) {
       this.setState({ typewriterEffect: false });
     }
@@ -174,7 +237,6 @@ class App extends Component {
       gender: val
     })
   };
-
 
   render() {
     const { selectedIndex, textNumberOfLines } = this.state
@@ -251,7 +313,6 @@ class App extends Component {
       let string1 = `Several days`
       inputQuestion =
         <View style={containerStyles.Seperator} >
-          <Text style={componentStyles.smallText}>Little interest or pleasure in doing things.</Text>
           <SegmentedControlTab textNumberOfLines={4}
             values={["Not at all", "Several\ndays", "More than half the\ndays", "Nearly everyday"]}
             selectedIndex={this.state.selectedIndex}
@@ -422,7 +483,8 @@ const segmentedControlTabStyles = StyleSheet.create({
     height: 80,
     backgroundColor: '#F2F2F2',
     width: 300,
-    borderRadius: 10
+    borderRadius: 10,
+    marginTop: '12%'
   },
   tabStyle: {
     backgroundColor: '#F2F2F2',
@@ -432,7 +494,7 @@ const segmentedControlTabStyles = StyleSheet.create({
   activeTabStyle: {
     backgroundColor: 'white',
     margin: 5,
-    borderRadius: 10, 
+    borderRadius: 10,
     shadowColor: '#000000',
     shadowOffset: {
       width: 0,
