@@ -42,6 +42,7 @@ var iconSize = screenWidth / 10;
 var total = 0;
 var IDs = [];
 var text;
+var functionality;
 
 const phq9Values = ["Not at all", "Several\ndays", "More than half the\ndays", "Nearly everyday"]
 const lastQuestion = ["Not at all", "Somewhat difficult", "Very diffucult", "Extremely difficult"]
@@ -115,6 +116,8 @@ class App extends Component {
         "", "segmentedControlTab"],
       14: ["How difficult have these problems made it to do work, take care of things at home, or get along with other people?", "", "segmentedControlTab"],
       15: ["", "", "text"],
+      16: ["", "", "text"],
+      17: ["", "", "text"],
     }
   };
 
@@ -149,10 +152,10 @@ class App extends Component {
   }
 
   handleIndexChange = index => {
-    
-      this.setState({ selectedIndex: index });
-      console.log(index)
-      if (this.state.currentId != 14) {
+
+    this.setState({ selectedIndex: index });
+    console.log(index)
+    if (this.state.currentId != 14) {
       IDs.push(this.state.currentId + '' + index);
       var id5 = IDs.filter((id) => id.charAt(0) === '5');
       var id6 = IDs.filter((id) => id.charAt(0) === '6');
@@ -167,7 +170,7 @@ class App extends Component {
         var ids = [id5, id6, id7, id8, id9, id10, id11, id12, id13]
         var value;
         for (var i = 0; i < ids.length; i++) {
-          value = this.getLastValue(ids[i]);
+          value = (ids[i]).pop();
           value = value.charAt(value.length - 1)
           total += parseInt(value)
         }
@@ -194,12 +197,22 @@ class App extends Component {
           break;
       }
       this.textBoxes[15][0] = text;
+      //this part doesn't work yet
+      if ((this.state.currentId == 16) && (parseInt((id13).pop()) != 0)) {
+        this.textBoxes[17][0] = "WARNING: This patient is having thoughts concerning for suicidal ideation or self-harm, and should be probed further, referred, or transferred for emergency psychiatric evaluation as clinically appropriate and depending on clinician overall risk assessment."
+      } else {
+        this.textBoxes[17].slice(0, 16);
+      }
+      //
+    } else {
+      functionality = lastQuestion[index].toLowerCase();
+      if (functionality == "not at all") {
+        this.textBoxes[16][0] = "Functionally, the patient does not report limitations due to their symptoms."
+      } else {
+        this.textBoxes[16][0] = `Functionally, the patient finds it is ${functionality} to perform life tasks due to their symptoms.`
+      }
     }
   };
-
-  getLastValue = (array) => {
-    return (array[array.length - 1])
-  }
 
   // Starts the text bubble animation and then calls the character animation
   startTextAnimation = () => {
@@ -287,18 +300,46 @@ class App extends Component {
       textType.push();
     }
     else if (this.state.typewriterEffect) {
-      textType.push(
-        <TypeWriter key="typewriter" style={componentStyles.text} typing={1} fixed={false} onTypingEnd={this.goToNext} maxDelay={35} fixed={true}>
-          {this.textBoxes[this.state.currentId][0]}
-        </TypeWriter>
-      );
+      if (this.textBoxes[this.state.currentId][0].length > 170) {
+        textType.push(
+          <TypeWriter key="typewriter" style={componentStyles.mediumText} typing={1} fixed={false} onTypingEnd={this.goToNext} maxDelay={35} fixed={true}>
+            {this.textBoxes[this.state.currentId][0]}
+          </TypeWriter>
+        );
+      } else if ((this.textBoxes[this.state.currentId][0].length > 250)) {
+        textType.push(
+          <Text key="text" style={componentStyles.smallText}>
+            {this.textBoxes[this.state.currentId][0]}
+          </Text>
+        );
+      } else {
+        textType.push(
+          <TypeWriter key="typewriter" style={componentStyles.text} typing={1} fixed={false} onTypingEnd={this.goToNext} maxDelay={35} fixed={true}>
+            {this.textBoxes[this.state.currentId][0]}
+          </TypeWriter>
+        );
+      }
     }
     else {
-      textType.push(
-        <Text key="text" style={componentStyles.text}>
-          {this.textBoxes[this.state.currentId][0]}
-        </Text>
-      );
+      if (this.textBoxes[this.state.currentId][0].length > 170) {
+        textType.push(
+          <Text key="text" style={componentStyles.mediumText}>
+            {this.textBoxes[this.state.currentId][0]}
+          </Text>
+        );
+      } else if ((this.textBoxes[this.state.currentId][0].length > 250)) {
+        textType.push(
+          <Text key="text" style={componentStyles.smallText}>
+            {this.textBoxes[this.state.currentId][0]}
+          </Text>
+        );
+      } else {
+        textType.push(
+          <Text key="text" style={componentStyles.text}>
+            {this.textBoxes[this.state.currentId][0]}
+          </Text>
+        );
+      }
     }
 
 
@@ -321,7 +362,7 @@ class App extends Component {
         </View>
     } else if (this.textBoxes[this.state.currentId][2] == "segmentedControlTab") {
       var values;
-      if (this.state.currentId === 14){
+      if (this.state.currentId === 14) {
         values = lastQuestion;
       } else {
         values = phq9Values;
@@ -433,7 +474,7 @@ const componentStyles = StyleSheet.create({
   },
   textBubble: {
     zIndex: 2,
-    height: '100%',
+    height: '105%',
     backgroundColor: '#FFFFFF',
     borderWidth: 0,
     borderRadius: screenWidth * .1,
@@ -443,7 +484,7 @@ const componentStyles = StyleSheet.create({
     shadowOpacity: .1,
   },
   textView: {
-    height: '80%',
+    height: '90%',
     alignSelf: 'stretch',
     justifyContent: 'center',
     alignItems: 'center',
@@ -464,6 +505,16 @@ const componentStyles = StyleSheet.create({
   smallText: {
     fontFamily: 'oxygen-light',
     fontSize: screenWidth * .057,
+    flexWrap: 'wrap',
+    // lineHeight: screenWidth * .108,
+    textAlign: 'left',
+    color: '#195D70',
+    paddingBottom: 10,
+    marginBottom: 0,
+  },
+  mediumText: {
+    fontFamily: 'oxygen-light',
+    fontSize: screenWidth * .060,
     flexWrap: 'wrap',
     // lineHeight: screenWidth * .108,
     textAlign: 'left',
