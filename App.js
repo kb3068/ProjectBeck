@@ -42,10 +42,8 @@ var iconSize = screenWidth / 10;
 var total = 0;
 var IDs = [];
 var text;
-var functionality;
 
 const phq9Values = ["Not at all", "Several\ndays", "More than half the\ndays", "Nearly everyday"]
-const lastQuestion = ["Not at all", "Somewhat difficult", "Very diffucult", "Extremely difficult"]
 
 const genderOptions = [
   {
@@ -114,10 +112,7 @@ class App extends Component {
         "", "segmentedControlTab"],
       13: ["Over the last 2 weeks, how often did you have thoughts that you would be better off dead, or thoughts of hurting yourself in some way?",
         "", "segmentedControlTab"],
-      14: ["How difficult have these problems made it to do work, take care of things at home, or get along with other people?", "", "segmentedControlTab"],
-      15: ["", "", "text"],
-      16: ["", "", "text"],
-      17: ["", "", "text"],
+      14: ["", "", "text"],
     }
   };
 
@@ -154,7 +149,6 @@ class App extends Component {
   handleIndexChange = index => {
 
     this.setState({ selectedIndex: index });
-    console.log(index)
     if (this.state.currentId != 14) {
       IDs.push(this.state.currentId + '' + index);
       var id5 = IDs.filter((id) => id.charAt(0) === '5');
@@ -174,7 +168,6 @@ class App extends Component {
           value = value.charAt(value.length - 1)
           total += parseInt(value)
         }
-        console.log(total)
       }
       switch (true) {
         case (total <= 4):
@@ -196,21 +189,7 @@ class App extends Component {
           text = ''
           break;
       }
-      this.textBoxes[15][0] = text;
-      //this part doesn't work yet
-      if ((this.state.currentId == 16) && (parseInt((id13).pop()) != 0)) {
-        this.textBoxes[17][0] = "WARNING: This patient is having thoughts concerning for suicidal ideation or self-harm, and should be probed further, referred, or transferred for emergency psychiatric evaluation as clinically appropriate and depending on clinician overall risk assessment."
-      } else {
-        this.textBoxes[17].slice(0, 16);
-      }
-      //
-    } else {
-      functionality = lastQuestion[index].toLowerCase();
-      if (functionality == "not at all") {
-        this.textBoxes[16][0] = "Functionally, the patient does not report limitations due to their symptoms."
-      } else {
-        this.textBoxes[16][0] = `Functionally, the patient finds it is ${functionality} to perform life tasks due to their symptoms.`
-      }
+      this.textBoxes[14][0] = text;
     }
   };
 
@@ -306,12 +285,6 @@ class App extends Component {
             {this.textBoxes[this.state.currentId][0]}
           </TypeWriter>
         );
-      } else if ((this.textBoxes[this.state.currentId][0].length > 250)) {
-        textType.push(
-          <Text key="text" style={componentStyles.smallText}>
-            {this.textBoxes[this.state.currentId][0]}
-          </Text>
-        );
       } else {
         textType.push(
           <TypeWriter key="typewriter" style={componentStyles.text} typing={1} fixed={false} onTypingEnd={this.goToNext} maxDelay={35} fixed={true}>
@@ -324,12 +297,6 @@ class App extends Component {
       if (this.textBoxes[this.state.currentId][0].length > 170) {
         textType.push(
           <Text key="text" style={componentStyles.mediumText}>
-            {this.textBoxes[this.state.currentId][0]}
-          </Text>
-        );
-      } else if ((this.textBoxes[this.state.currentId][0].length > 250)) {
-        textType.push(
-          <Text key="text" style={componentStyles.smallText}>
             {this.textBoxes[this.state.currentId][0]}
           </Text>
         );
@@ -361,16 +328,10 @@ class App extends Component {
           ></TextInput>
         </View>
     } else if (this.textBoxes[this.state.currentId][2] == "segmentedControlTab") {
-      var values;
-      if (this.state.currentId === 14) {
-        values = lastQuestion;
-      } else {
-        values = phq9Values;
-      }
       inputQuestion =
         <View style={containerStyles.Seperator} >
           <SegmentedControlTab textNumberOfLines={4}
-            values={values}
+            values={phq9Values}
             selectedIndex={this.state.selectedIndex}
             onTabPress={this.handleIndexChange}
             borderRadius={10}
