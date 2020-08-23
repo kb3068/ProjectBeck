@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, TextInput, View, TouchableWithoutFeedback, ImageBackground, Dimensions, Animated, Easing, Image, AppState } from 'react-native';
+import { StyleSheet, Text, TextInput, View, TouchableWithoutFeedback, ImageBackground, Dimensions, Animated, Easing, Image, AppState, Button } from 'react-native';
 import Icon from 'react-native-vector-icons/Fontisto';
 import * as SplashScreen from 'expo-splash-screen';
 
@@ -16,6 +16,8 @@ import TypeWriter from "react-native-typewriter";
 import * as Font from 'expo-font';
 import { AppLoading } from 'expo';
 
+import { ViewStyleProp, TextStyleProp, } from 'react-native'
+
 // Background PNG
 import background from './assets/images/background.png';
 
@@ -25,12 +27,23 @@ import happyCharacter from './assets/images/happy.png';
 import neutralCharacter from './assets/images/neutral.png';
 import sadCharacter from './assets/images/sad.png';
 
+// Segmented Control Tab for multiple choice
+import SegmentedControlTab from "react-native-segmented-control-tab";
 
+Props = {
+  tabStyle: ViewStyleProp,
+  textNumberOfLines: 4,
+}
 // Used to make the left icon and CSS attributes such as fontSize relative to the screen size
 const { width, height } = Dimensions.get("window");
 const screenWidth = width;
 const screenHeight = height;
 var iconSize = screenWidth / 10;
+var total = 0;
+var IDs = [];
+var text;
+
+const phq9Values = ["Not at all", "Several\ndays", "More than half the\ndays", "Nearly everyday"]
 
 const genderOptions = [
   {
@@ -67,9 +80,13 @@ class App extends Component {
       characterTransform: new Animated.Value(0),
       appState: 'active',
       gender: 'Other',
-      firstName: ''
+      firstName: '',
+      selectedIndex: 0,
     };
+
+
     AppState.addEventListener('change', newState => this.setState({ appState: newState }));
+
 
     // The second item in the list controls which character will show up
     this.textBoxes = {
@@ -77,6 +94,25 @@ class App extends Component {
       2: ["I’m so excited to meet you.", "excited", "text"],
       3: ["Please enter your first name?", "neutral", "textInput"],
       4: ["What's your gender?", "neutral", "radioInput"],
+      5: ["Over the last 2 weeks, how often did you have little interest/pleasure in doing things?",
+        "", "segmentedControlTab"],
+      6: ["Over the last 2 weeks, how often were you feeling down, depressed, or hopeless?",
+        "", "segmentedControlTab"],
+      7: ["Over the last 2 weeks, how often did you have trouble falling or staying asleep, or sleeping too much?",
+        "", "segmentedControlTab"],
+      8: ["Over the last 2 weeks, how often were you feeling tired or had little energy?",
+        "", "segmentedControlTab"],
+      9: ["Over the last 2 weeks, how often did you have a problem with poor appetite or overeating?",
+        "", "segmentedControlTab"],
+      10: ["Over the last 2 weeks, how often were you feeling bad about yourself — or that you are a failure or have let yourself or your family down?",
+        "", "segmentedControlTab"],
+      11: ["Over the last 2 weeks, how often did you have trouble concentrating on things, such as reading the newspaper or watching television?",
+        "", "segmentedControlTab"],
+      12: ["Over the last 2 weeks, how often were you moving or speaking so slowly that other people could have noticed? Or so fidgety or restless that you have been moving a lot more than usual?",
+        "", "segmentedControlTab"],
+      13: ["Over the last 2 weeks, how often did you have thoughts that you would be better off dead, or thoughts of hurting yourself in some way?",
+        "", "segmentedControlTab"],
+      14: ["", "", "text"],
     }
   };
 
@@ -110,6 +146,53 @@ class App extends Component {
     await SplashScreen.hideAsync();
   }
 
+  handleIndexChange = index => {
+
+    this.setState({ selectedIndex: index });
+    if (this.state.currentId != 14) {
+      IDs.push(this.state.currentId + '' + index);
+      var id5 = IDs.filter((id) => id.charAt(0) === '5');
+      var id6 = IDs.filter((id) => id.charAt(0) === '6');
+      var id7 = IDs.filter((id) => id.charAt(0) === '7');
+      var id8 = IDs.filter((id) => id.charAt(0) === '8');
+      var id9 = IDs.filter((id) => id.charAt(0) === '9');
+      var id10 = IDs.filter((id) => id.slice(0, 2) === '10');
+      var id11 = IDs.filter((id) => id.slice(0, 2) === '11');
+      var id12 = IDs.filter((id) => id.slice(0, 2) === '12');
+      var id13 = IDs.filter((id) => id.slice(0, 2) === '13');
+      if (this.state.currentId === 13) {
+        var ids = [id5, id6, id7, id8, id9, id10, id11, id12, id13]
+        var value;
+        for (var i = 0; i < ids.length; i++) {
+          value = (ids[i]).pop();
+          value = value.charAt(value.length - 1)
+          total += parseInt(value)
+        }
+      }
+      switch (true) {
+        case (total <= 4):
+          text = "Scores ≤4 suggest minimal depression which may not require treatment."
+          break;
+        case (total >= 5 && total <= 9):
+          text = 'Scores 5-9 suggest mild depression which may require only watchful waiting and repeated PHQ-9 at followup.'
+          break;
+        case (total >= 10 && total <= 14):
+          text = 'Scores 10-14 suggest moderate depression severity; patients should have a treatment plan ranging form counseling, followup, and/or pharmacotherapy.'
+          break;
+        case (total >= 15 && total <= 19):
+          text = 'Scores 15-19 suggest moderately severe depression; patients typically should have immediate initiation of pharmacotherapy and/or psychotherapy.'
+          break;
+        case (total >= 20):
+          text = 'Scores 20 and greater suggest severe depression; patients typically should have immediate initiation of pharmacotherapy and expedited referral to mental health specialist.'
+          break;
+        default:
+          text = ''
+          break;
+      }
+      this.textBoxes[14][0] = text;
+    }
+  };
+
   // Starts the text bubble animation and then calls the character animation
   startTextAnimation = () => {
     Animated.timing(this.state.bubbleTransform, {
@@ -132,6 +215,7 @@ class App extends Component {
 
   // Changes the text and image to that of the following "page" in the intro sequence
   goToNext = () => {
+    this.state.selectedIndex = null;
     if (this.state.typewriterEffect == true) {
       this.setState({ typewriterEffect: false });
     }
@@ -157,6 +241,7 @@ class App extends Component {
   };
 
   render() {
+    const { selectedIndex, textNumberOfLines } = this.state
     var emotion = this.textBoxes[this.state.currentId][1];
     var character;
     if (emotion == "excited") {
@@ -194,19 +279,36 @@ class App extends Component {
       textType.push();
     }
     else if (this.state.typewriterEffect) {
-      textType.push(
-        <TypeWriter key="typewriter" style={componentStyles.text} typing={1} fixed={false} onTypingEnd={this.goToNext} maxDelay={35} fixed={true}>
-          {this.textBoxes[this.state.currentId][0]}
-        </TypeWriter>
-      );
+      if (this.textBoxes[this.state.currentId][0].length > 170) {
+        textType.push(
+          <TypeWriter key="typewriter" style={componentStyles.mediumText} typing={1} fixed={false} onTypingEnd={this.goToNext} maxDelay={35} fixed={true}>
+            {this.textBoxes[this.state.currentId][0]}
+          </TypeWriter>
+        );
+      } else {
+        textType.push(
+          <TypeWriter key="typewriter" style={componentStyles.text} typing={1} fixed={false} onTypingEnd={this.goToNext} maxDelay={35} fixed={true}>
+            {this.textBoxes[this.state.currentId][0]}
+          </TypeWriter>
+        );
+      }
     }
     else {
-      textType.push(
-        <Text key="text" style={componentStyles.text}>
-          {this.textBoxes[this.state.currentId][0]}
-        </Text>
-      );
+      if (this.textBoxes[this.state.currentId][0].length > 170) {
+        textType.push(
+          <Text key="text" style={componentStyles.mediumText}>
+            {this.textBoxes[this.state.currentId][0]}
+          </Text>
+        );
+      } else {
+        textType.push(
+          <Text key="text" style={componentStyles.text}>
+            {this.textBoxes[this.state.currentId][0]}
+          </Text>
+        );
+      }
     }
+
 
     // Controls whether an input question shows up
     var inputQuestion = [];
@@ -219,11 +321,26 @@ class App extends Component {
     else if (this.textBoxes[this.state.currentId][2] == "textInput") {
       inputQuestion =
         <View style={containerStyles.genderOptionsView}>
-        <TextInput
-          style={componentStyles.textInput}
-          onChangeText={text => this.setState({'firstName': text})}
-          value={this.state.firstName}
+          <TextInput
+            style={componentStyles.textInput}
+            onChangeText={text => this.setState({ 'firstName': text })}
+            value={this.state.firstName}
           ></TextInput>
+        </View>
+    } else if (this.textBoxes[this.state.currentId][2] == "segmentedControlTab") {
+      inputQuestion =
+        <View style={containerStyles.Seperator} >
+          <SegmentedControlTab textNumberOfLines={4}
+            values={phq9Values}
+            selectedIndex={this.state.selectedIndex}
+            onTabPress={this.handleIndexChange}
+            borderRadius={10}
+            tabsContainerStyle={segmentedControlTabStyles.tabsContainerStyle}
+            tabStyle={segmentedControlTabStyles.tabStyle}
+            activeTabStyle={segmentedControlTabStyles.activeTabStyle}
+            tabTextStyle={segmentedControlTabStyles.tabTextStyle}
+            activeTabTextStyle={segmentedControlTabStyles.activeTabTextStyle}
+          />
         </View>
     }
 
@@ -239,7 +356,9 @@ class App extends Component {
     }
     else {
       return (
+
         <TouchableWithoutFeedback onPress={this.goToNext}>
+
           <View style={containerStyles.container}>
 
             <ImageBackground source={background} style={containerStyles.standardBackground}>
@@ -304,7 +423,7 @@ const containerStyles = StyleSheet.create({
     justifyContent: 'center',
     paddingTop: '10%',
     width: '100%'
-  }
+  },
 });
 
 const componentStyles = StyleSheet.create({
@@ -316,7 +435,7 @@ const componentStyles = StyleSheet.create({
   },
   textBubble: {
     zIndex: 2,
-    height: '100%',
+    height: '105%',
     backgroundColor: '#FFFFFF',
     borderWidth: 0,
     borderRadius: screenWidth * .1,
@@ -326,7 +445,7 @@ const componentStyles = StyleSheet.create({
     shadowOpacity: .1,
   },
   textView: {
-    height: '80%',
+    height: '90%',
     alignSelf: 'stretch',
     justifyContent: 'center',
     alignItems: 'center',
@@ -344,6 +463,26 @@ const componentStyles = StyleSheet.create({
     paddingBottom: 0,
     marginBottom: 0,
   },
+  smallText: {
+    fontFamily: 'oxygen-light',
+    fontSize: screenWidth * .057,
+    flexWrap: 'wrap',
+    // lineHeight: screenWidth * .108,
+    textAlign: 'left',
+    color: '#195D70',
+    paddingBottom: 10,
+    marginBottom: 0,
+  },
+  mediumText: {
+    fontFamily: 'oxygen-light',
+    fontSize: screenWidth * .060,
+    flexWrap: 'wrap',
+    // lineHeight: screenWidth * .108,
+    textAlign: 'left',
+    color: '#195D70',
+    paddingBottom: 10,
+    marginBottom: 0,
+  },
   iconView: {
     justifyContent: 'space-around',
     height: '20%'
@@ -354,7 +493,7 @@ const componentStyles = StyleSheet.create({
     paddingLeft: '8%',
   },
   textInput: {
-    width: '85%', 
+    width: '85%',
     height: 49,
     color: '#333333',
     backgroundColor: '#EFF2F6',
@@ -364,6 +503,49 @@ const componentStyles = StyleSheet.create({
     fontSize: screenWidth * .05,
     padding: 12
   }
+});
+
+const segmentedControlTabStyles = StyleSheet.create({
+  tabsContainerStyle: {
+    height: 80,
+    backgroundColor: '#F2F2F2',
+    width: 300,
+    borderRadius: 10,
+    marginTop: '12%'
+  },
+  tabStyle: {
+    backgroundColor: '#F2F2F2',
+    borderWidth: 0,
+    borderColor: 'transparent',
+  },
+  activeTabStyle: {
+    backgroundColor: 'white',
+    margin: 5,
+    borderRadius: 10,
+    shadowColor: '#000000',
+    shadowOffset: {
+      width: 0,
+      height: screenWidth * .001
+    },
+    shadowRadius: 2,
+    shadowOpacity: .6
+  },
+  tabTextStyle: {
+    color: '#BBBBBB',
+    flexWrap: "wrap",
+    alignSelf: "center",
+    justifyContent: "center",
+    textAlign: "center",
+    fontFamily: 'oxygen-regular',
+
+  },
+  activeTabTextStyle: {
+    color: '#195D70',
+    textAlign: "center",
+    flexWrap: "wrap",
+    fontFamily: 'oxygen-regular',
+    opacity: 1
+  },
 });
 
 export default App;
